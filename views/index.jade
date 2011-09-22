@@ -1,5 +1,9 @@
 h1= title
 p Welcome to #{title}
 script(type='text/javascript')
-
+  $(function() {
+    $('#message').keypress(function(e) {
+      socket.emit('my other event', $(this).val());
+    });
+  });
 input(type='text',id='message')
