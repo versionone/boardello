@@ -4,9 +4,13 @@
 
 <script type="text/javascript" src="javascripts/raphael.js"></script>
 <script type="text/javascript" src="javascripts/jquery-1.6.4.js"></script>
+<script type="text/javascript" src="socket.io/socket.io.js"></script>
 
 
 <script type="text/javascript">
+	var socket = io.connect('http://localhost');
+	
+
 	// Creates canvas 320 × 200 at 10, 50
 	var board = Raphael(10, 50, 800, 600);
 	var cards = [];
@@ -54,6 +58,8 @@
 			up = function () {
 			    card.attr({opacity: .5});
 			    title.attr({opacity: 1})
+			    var position = card.getBBox();
+			    socket.emit('card moved', {id: card.id, x: position.x, y: position.y});
 			};
 
 		card.drag(move, start, up);
@@ -61,6 +67,13 @@
 		return card;
 	}
 
+	socket.on('card moved', function (data) {
+		console.log(data);
+		var card = cards[data.id]
+		var currentBoundingBox = card.getBBox();
+		card.translate(data.x - currentBoundingBox.x , data.y - currentBoundingBox.y );
+
+	});
 
 	createCard('hi')
 	createCard('dave')
