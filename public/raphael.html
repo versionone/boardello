@@ -19,6 +19,7 @@
 		card.id = cards.length;
 		cards.push(card);
 
+		var offset = 30 * card.id;
 		card.push(
 			title,
 			board.circle(50, 50, 10),
@@ -27,6 +28,8 @@
 			board.circle(250, 150, 10),
 			board.rect(50, 50, 200, 100, 5)
 		)
+
+		card.translate(offset, offset)
 
 		card.attr({
 		    fill: "red",
@@ -61,6 +64,7 @@
 
 	createCard('hi')
 	createCard('dave')
+	createCard('dan')
 
 </script>
 
