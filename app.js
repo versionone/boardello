@@ -23,6 +23,11 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+io.configure(function () {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 10);
+});
+
 // Routes
 
 app.get('/', function(req, res){
@@ -43,7 +48,6 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('card moved', data);
   });
 });
-
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
