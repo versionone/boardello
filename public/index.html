@@ -1,0 +1,60 @@
+<doctype html>
+<html>
+<head>
+
+<script type="text/javascript" src="script/raphael.js"></script>
+<script type="text/javascript" src="script/jquery-1.6.4.js"></script>
+
+
+<script type="text/javascript">
+	// Creates canvas 320 × 200 at 10, 50
+	var paper = Raphael(10, 50, 320, 200);
+
+	var title = paper.text(75, 75, "hi");
+
+	var card = paper.set();
+	card.push(
+		title,
+		paper.circle(50, 50, 10),
+		paper.circle(50, 150, 10),
+		paper.circle(250, 50, 10),
+		paper.circle(250, 150, 10),
+		paper.rect(50, 50, 200, 100, 5)
+	)
+
+	card.attr({
+	    fill: "red",
+	    stroke: "none",
+	    opacity: .5
+	});
+
+	title.attr({
+		fill: "white",
+		stroke: "black",
+		opacity: 1
+	}).toFront();
+
+	var start = function () {
+		    card.originalBoundingBox = card.getBBox();
+		    card.attr({opacity: 1});
+		},
+		move = function (dx, dy) {
+		    var currentBoundingBox = card.getBBox();
+			card.translate(card.originalBoundingBox.x - currentBoundingBox.x + dx, card.originalBoundingBox.y - currentBoundingBox.y + dy);
+		},
+		up = function () {
+		    card.attr({opacity: .5});
+		    title.attr({opacity: 1})
+		};
+
+	card.drag(move, start, up);
+
+</script>
+
+
+</head>
+<body>
+
+
+</body>
+</html>
