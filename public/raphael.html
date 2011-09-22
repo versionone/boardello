@@ -8,46 +8,59 @@
 
 <script type="text/javascript">
 	// Creates canvas 320 × 200 at 10, 50
-	var paper = Raphael(10, 50, 320, 200);
+	var board = Raphael(10, 50, 800, 600);
+	var cards = [];
 
-	var title = paper.text(75, 75, "hi");
+	function createCard(titleText) {
 
-	var card = paper.set();
-	card.push(
-		title,
-		paper.circle(50, 50, 10),
-		paper.circle(50, 150, 10),
-		paper.circle(250, 50, 10),
-		paper.circle(250, 150, 10),
-		paper.rect(50, 50, 200, 100, 5)
-	)
+		var title = board.text(75, 75, titleText);
 
-	card.attr({
-	    fill: "red",
-	    stroke: "none",
-	    opacity: .5
-	});
+		var card = board.set();
+		card.id = cards.length;
+		cards.push(card);
 
-	title.attr({
-		fill: "white",
-		stroke: "black",
-		opacity: 1
-	}).toFront();
+		card.push(
+			title,
+			board.circle(50, 50, 10),
+			board.circle(50, 150, 10),
+			board.circle(250, 50, 10),
+			board.circle(250, 150, 10),
+			board.rect(50, 50, 200, 100, 5)
+		)
 
-	var start = function () {
-		    card.originalBoundingBox = card.getBBox();
-		    card.attr({opacity: 1});
-		},
-		move = function (dx, dy) {
-		    var currentBoundingBox = card.getBBox();
-			card.translate(card.originalBoundingBox.x - currentBoundingBox.x + dx, card.originalBoundingBox.y - currentBoundingBox.y + dy);
-		},
-		up = function () {
-		    card.attr({opacity: .5});
-		    title.attr({opacity: 1})
-		};
+		card.attr({
+		    fill: "red",
+		    stroke: "none",
+		    opacity: .5
+		});
 
-	card.drag(move, start, up);
+		title.attr({
+			fill: "white",
+			stroke: "black",
+			opacity: 1
+		}).toFront();
+
+		var start = function () {
+			    card.originalBoundingBox = card.getBBox();
+			    card.attr({opacity: 1});
+			},
+			move = function (dx, dy) {
+			    var currentBoundingBox = card.getBBox();
+				card.translate(card.originalBoundingBox.x - currentBoundingBox.x + dx, card.originalBoundingBox.y - currentBoundingBox.y + dy);
+			},
+			up = function () {
+			    card.attr({opacity: .5});
+			    title.attr({opacity: 1})
+			};
+
+		card.drag(move, start, up);
+		
+		return card;
+	}
+
+
+	createCard('hi')
+	createCard('dave')
 
 </script>
 
