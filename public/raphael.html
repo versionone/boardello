@@ -8,8 +8,8 @@
 
 
 <script type="text/javascript">
-	var socket = io.connect('http://localhost');
-	
+	var socket = io.connect('http://localhost:3000');
+
 
 	// Creates canvas 320 × 200 at 10, 50
 	var board = Raphael(10, 50, 800, 600);
@@ -52,18 +52,18 @@
 			    card.attr({opacity: 1});
 			},
 			move = function (dx, dy) {
-			    var currentBoundingBox = card.getBBox();
+        var currentBoundingBox = card.getBBox();
 				card.translate(card.originalBoundingBox.x - currentBoundingBox.x + dx, card.originalBoundingBox.y - currentBoundingBox.y + dy);
+        socket.emit('card moved', {id: card.id, x: currentBoundingBox.x, y: currentBoundingBox.y});
 			},
 			up = function () {
 			    card.attr({opacity: .5});
 			    title.attr({opacity: 1})
 			    var position = card.getBBox();
-			    socket.emit('card moved', {id: card.id, x: position.x, y: position.y});
 			};
 
 		card.drag(move, start, up);
-		
+
 		return card;
 	}
 

@@ -40,7 +40,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('card moved', function (data) {
     console.log(data);
-    socket.emit('card moved', data);
+    socket.broadcast.emit('card moved', data);
   });
 });
 
