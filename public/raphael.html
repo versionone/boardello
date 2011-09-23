@@ -10,7 +10,7 @@
 <script type="text/javascript">
 
   var url = window.location.protocol + '//' + window.location.hostname
-  var socket = io.connect('http://gentle-fire-9778.herokuapp.com');
+  var socket = io.connect(url);
 
 	// Creates canvas 320 × 200 at 10, 50
 	var board = Raphael(10, 50, 800, 600);
