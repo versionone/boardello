@@ -31,12 +31,21 @@ io.configure(function () {
 // Routes
 
 app.get('/', function(req, res){
-  res.render('index', {
-    title: 'Express'
-  });
+  res.render('index');
+});
+
+app.post('/signup', function(req, res){
+  io.sockets.in('app').emit('new-person', req.param('username'));
+  res.redirect('/board');
+});
+
+app.get('/board', function(req, res){
+  res.render('board');
 });
 
 io.sockets.on('connection', function (socket) {
+  socket.join('app'); // our app has one channel!
+
   socket.emit('news', { hello: 'world' });
 
   socket.on('my other event', function (data) {
@@ -44,7 +53,6 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('card moved', function (data) {
-    console.log(data);
     socket.broadcast.emit('card moved', data);
   });
 });

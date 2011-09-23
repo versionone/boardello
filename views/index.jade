@@ -1,9 +1,5 @@
-h1= title
-p Welcome to #{title}
-script(type='text/javascript')
-  $(function() {
-    $('#message').keypress(function(e) {
-      socket.emit('my other event', $(this).val());
-    });
-  });
-input(type='text',id='message')
+img(src='images/logo.png')
+
+form(class='welcome',method='post',action='signup')
+  input(type='text',name='username',id='username',placeholder="What's your name, stranger?")
+  input(type='submit',value="Cowboy up!")

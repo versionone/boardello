@@ -69,12 +69,16 @@
 	}
 
 	socket.on('card moved', function (data) {
-		console.log(data);
+
 		var card = cards[data.id]
 		var currentBoundingBox = card.getBBox();
 		card.translate(data.x - currentBoundingBox.x , data.y - currentBoundingBox.y );
 
 	});
+
+  socket.on('new-person', function(data) {
+    alert('say howdy to ' + data);
+  });
 
 	createCard('hi')
 	createCard('dave')
