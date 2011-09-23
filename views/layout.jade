@@ -8,6 +8,9 @@ html
 
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(type='text/javascript', src='/javascripts/jquery-1.6.4.js')
+    script(type='text/javascript', src='/javascripts/underscore.js')
+    script(type='text/javascript', src='/javascripts/backbone.js')
+
 
     script(type='text/javascript')
       var socket = io.connect('http://localhost');
@@ -15,5 +18,6 @@ html
         console.log(data);
         socket.emit('my other event', { my: 'data' });
       });
+
 
   body!= body
