@@ -11,20 +11,56 @@
 	$(function(){
 
 		var padding = 10
-		var board = Raphael('board-wrapper', '100%', '100%');
+		var paper = Raphael('board-wrapper', '100%', '100%');
+		
+		var board = paper.set();
+		board.push(
+			paper.rect(padding, padding, 200, 200).attr({
+				fill: 'red'
+			})
+		);
 
-		board.rect(0, 0, 200, 600).attr({
-			fill: 'red'
+		var $board = $(board.node)
+		for (var i in board.items) {
+			debugger
+			var $item = $(board.items[i][0])
+		$item.click(function(){
+			console.log('click')
+			var card = paper.rect(0, 0, 100, 100).attr({
+				fill: 'white',
+				stroke: 'black'
+			})
+
+			var start = function () {
+				    card.originalBoundingBox = card.getBBox();
+				    card.attr({opacity: 1});
+				},
+				move = function (dx, dy) {
+	      			var currentBoundingBox = card.getBBox();
+					card.translate(card.originalBoundingBox.x - currentBoundingBox.x + dx, card.originalBoundingBox.y - currentBoundingBox.y + dy);
+				},
+				up = function () {
+				    card.attr({opacity: .5});
+				    var position = card.getBBox();
+				};
+
+			card.drag(move, start, up);
+	
 		})
+		}
 
 		$(window).resize(function(){
 			var $window = $(window);
-			board.setSize($window.width() - (padding * 2), $window.height() - (padding * 2))
+			board.attr({
+				width: $window.width() - (2 * padding),
+				height: $window.height() - (2 * padding)
+			})
 		})
 	})
 </script>
 
 <style>
+	html, body { padding: 0; margin: 0;}
 	#board-wrapper {
 		height: 100%;
 		background: blue;
