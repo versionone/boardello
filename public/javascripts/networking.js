@@ -1,17 +1,47 @@
-var url = window.location.protocol + '//' + window.location.hostname
-var socket = io.connect(url);
+var Networking = (function() {
 
-socket.on('card-moved', function (data) {
-//  var card = cards[data.id]
-//  var currentBoundingBox = card.getBBox();
-//  card.translate(data.x - currentBoundingBox.x , data.y - currentBoundingBox.y );
-});
+  var module = {};
 
-socket.on('new-person', function(data) {
-  alert('say howdy to ' + data);
-});
+  _.extend(module, Backbone.events);
 
+  var url = window.location.origin
+      , socket = io.connect(url);
 
-function sendCardMoved(id, x, y) {
-  socket.emit('card-moved', {id: id, x: x, y: y});
-}
+  // private methods
+  function sendCardGrabbed (id, user) {
+    socket.emit('card-grabbed', {id: id, user: user});
+  }
+
+  function sendCardLetGo (id) {
+    socket.emit('card-letgo', {id: id});
+  }
+
+  function sendCardMoving (id, x, y) {
+    socket.emit('card-moving', {id: id, x: x, y: y});
+  }
+
+  function sendCardCreated () {
+    socket.emit('card-created');
+  }
+
+  function sendCardDestroyed(id) {
+    socket.emit('card-destroyed', {id: id});
+  }
+
+  module.bind('card-grabbed', module.sendCardGrabbed);
+  module.bind('card-letgo', module.sendCardLetGo);
+  module.bind('card-moving', module.sendCardMoving);
+  module.bind('card-created', module.sendCardCreated);
+  module.bind('card-destroyed', module.sendCardDestroyed);
+
+  socket.on('server/card-moving', function (data) {
+    module.trigger('card-moved', data);
+  });
+
+  socket.on('server/new-person', function(data) {
+    module.trigger('user-joined', data);
+  });
+
+  return module;
+
+})();
