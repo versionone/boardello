@@ -36,7 +36,7 @@ app.get('/', function(req, res){
 
 app.post('/signup', function(req, res){
   io.sockets.in('app').emit('new-person', req.param('username'));
-  res.redirect('/raphael.html');
+  res.redirect('/board');
 });
 
 app.get('/board', function(req, res){
@@ -46,14 +46,12 @@ app.get('/board', function(req, res){
 io.sockets.on('connection', function (socket) {
   socket.join('app'); // our app has one channel!
 
-  socket.emit('news', { hello: 'world' });
-
   socket.on('my other event', function (data) {
     console.log(data);
   });
 
-  socket.on('card moved', function (data) {
-    socket.broadcast.emit('card moved', data);
+  socket.on('card-moved', function (data) {
+    socket.broadcast.emit('card-moved', data);
   });
 });
 
