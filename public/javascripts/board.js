@@ -6,13 +6,19 @@ var Board = Backbone.Model.extend({
 			this.set({cards: cards})
 		},
 
-		addCard: function(title, cardId){
+		addCard: function(title){
 			var card = new Card()
 			card.set({title: title})
-			if (cardId) card.set({id: cardId})
 			this.get('cards').add(card)
 
-			Networking.trigger('client:card-created', card.toJSON())
+			Networking.trigger('card-created', card.toJSON())
+		},
+
+		addRemoteCard: function (_card){ 
+			var card = new Card()
+			card.set({title: _card.title, id: _card.id})
+
+			this.get('cards').add(card)
 		}
 	})
 
@@ -32,7 +38,7 @@ var BoardView = Backbone.View.extend({
 
 		var model = this.model
     Networking.bind('remote:card-created', function(data) {
-      model.addCard(data.title, data.cardId)
+      model.addRemoteCard(data)
     });
 
 		this.model.bind('change:title', this.titleChanged)
