@@ -29,7 +29,6 @@ var Networking = (function() {
   }
 
   function sendCardCreated () {
-    debugger
     sendMessage('client:card-created');
   }
 
@@ -57,7 +56,6 @@ var Networking = (function() {
   });
 
   socket.on('server:card-created', function(data) {
-    debugger
     triggerEvent('remote-card-created', data);
   });
 

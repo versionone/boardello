@@ -7,7 +7,6 @@ var Board = Backbone.Model.extend({
 		},
 
 		addCard: function(title){
-			debugger
 			var card = new Card()
 			card.set({title: title})
 			this.get('cards').add(card)
