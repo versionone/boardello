@@ -51,6 +51,10 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('server:card-moving', data);
   });
 
+  socket.on('client:cursor-movement', function (data) {
+    socket.broadcast.emit('server:cursor-movement', data);
+  });
+
   socket.on('client:card-created', function(data) {
     socket.broadcast.emit('server:card-created', data);
   });

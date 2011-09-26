@@ -35,6 +35,10 @@ var BoardView = Backbone.View.extend({
 
     Networking.bind('remote:new-user', this.newUser);
 
+    Networking.bind('remote:cursor-movement', function(data) {
+      console.log(data);
+    });
+
 		this.render()
 	},
 
@@ -42,6 +46,11 @@ var BoardView = Backbone.View.extend({
 		$(this.el).html(render('board', this.model.toJSON()))
     $(this.el).append('<div class="users"><div>');
 		$('body').append(this.el);
+
+    $(document).mousemove(function(e) {
+      Networking.trigger('cursor-movement', { username: 'bob', x: e.pageX, y: e.pageY });
+    });
+
 		return this
 	},
 

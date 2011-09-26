@@ -36,16 +36,25 @@ var Networking = (function() {
     sendMessage('client:card-destroyed', {id: id});
   }
 
+  function sendCursorMovement(data) {
+    sendMessage('client:cursor-movement', data);
+  }
+
   module.bind('card-grabbed', sendCardGrabbed);
   module.bind('card-letgo', sendCardLetGo);
   module.bind('card-moving', sendCardMoving);
   module.bind('card-created', sendCardCreated);
   module.bind('card-destroyed', sendCardDestroyed);
+  module.bind('cursor-movement', sendCursorMovement);
 
   function triggerEvent(topic, data) {
     if (data.clientId === clientId) return;
     module.trigger(topic, data);
   }
+
+  socket.on('server:cursor-movement', function (data) {
+    triggerEvent('remote:cursor-movement', data);
+  });
 
   socket.on('server:card-moving', function (data) {
     triggerEvent('remote:card-moving', data);
