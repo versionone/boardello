@@ -2,49 +2,61 @@ var Networking = (function() {
 
   var module = {};
 
+  var clientId = 1 + Math.random() * 100000000000000000;
+
   _.extend(module, Backbone.Events);
 
   var url = window.location.origin
       , socket = io.connect(url);
 
+  function sendMessage(topic, data) {
+    data = data || {};
+    data.clientId = clientId;
+    socket.emit(topic, data);
+  }
+
   // private methods
   function sendCardGrabbed (id, user) {
-    socket.emit('card-grabbed', {id: id, user: user});
+    sendMessage('card-grabbed', {id: id, user: user});
   }
 
   function sendCardLetGo (id) {
-    socket.emit('card-letgo', {id: id});
+    sendMessage('card-letgo', {id: id});
   }
 
   function sendCardMoving (id, x, y) {
-    socket.emit('card-moving', {id: id, x: x, y: y});
+    sendMessage('card-moving', {id: id, x: x, y: y});
   }
 
   function sendCardCreated () {
-    console.log('sending card-created')
-    socket.emit('card-created');
+    sendMessage('card-created');
   }
 
   function sendCardDestroyed(id) {
-    socket.emit('card-destroyed', {id: id});
+    sendMessage('card-destroyed', {id: id});
   }
 
-  module.bind('card-grabbed', module.sendCardGrabbed);
-  module.bind('card-letgo', module.sendCardLetGo);
-  module.bind('card-moving', module.sendCardMoving);
-  module.bind('card-created', module.sendCardCreated);
-  module.bind('card-destroyed', module.sendCardDestroyed);
+  module.bind('card-grabbed', sendCardGrabbed);
+  module.bind('card-letgo', sendCardLetGo);
+  module.bind('card-moving', sendCardMoving);
+  module.bind('card-created', sendCardCreated);
+  module.bind('card-destroyed', sendCardDestroyed);
+
+  function triggerEvent(topic, data) {
+    if (data.clientId === clientId) return;
+    module.trigger(topic, data);
+  }
 
   socket.on('server:card-moving', function (data) {
-    module.trigger('card-moved', data);
+    triggerEvent('card-moved', data);
   });
 
   socket.on('server:new-person', function(data) {
-    module.trigger('user-joined', data);
+    triggerEvent('user-joined', data);
   });
 
   socket.on('server:card-created', function(data) {
-    module.trigger('card-created', data);
+    triggerEvent('card-created', data);
   });
 
   return module;
