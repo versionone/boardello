@@ -1,4 +1,4 @@
-var Networking = (function() {
+require(["../socket.io/socket.io"], "Networking", function(){
 
   var module = {};
 
@@ -61,4 +61,4 @@ var Networking = (function() {
 
   return module;
 
-})();
+});
