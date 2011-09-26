@@ -11,7 +11,7 @@ var Board = Backbone.Model.extend({
 			card.set({title: title})
 			this.get('cards').add(card)
 
-			Networking.trigger('local-card-created', card)
+			Networking.trigger('client:card-created', card)
 		}
 	})
 
@@ -29,7 +29,7 @@ var BoardView = Backbone.View.extend({
 	initialize: function(){
 		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded') // every function that uses 'this' as the current object should be in here
 
-    Networking.bind('remote-card-created', function(data) {
+    Networking.bind('remote:card-created', function(data) {
       console.log(data);
     });
 

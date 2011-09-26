@@ -44,13 +44,17 @@ app.get('/board', function(req, res){
 });
 
 io.sockets.on('connection', function (socket) {
+
   socket.join('app'); // our app has one channel!
-  socket.on('card-moving', function (data) {
+
+  socket.on('client:card-moving', function (data) {
     socket.in('app').emit('server:card-moving', data);
   });
+
   socket.on('client:card-created', function(data) {
     socket.broadcast.emit('server:card-created', data);
   });
+
 });
 
 var port = process.env.PORT || 3000;

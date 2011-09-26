@@ -17,15 +17,15 @@ var Networking = (function() {
 
   // private methods
   function sendCardGrabbed (id, user) {
-    sendMessage('card-grabbed', {id: id, user: user});
+    sendMessage('client:card-grabbed', {id: id, user: user});
   }
 
   function sendCardLetGo (id) {
-    sendMessage('card-letgo', {id: id});
+    sendMessage('client:card-letgo', {id: id});
   }
 
   function sendCardMoving (id, x, y) {
-    sendMessage('card-moving', {id: id, x: x, y: y});
+    sendMessage('client:card-moving', {id: id, x: x, y: y});
   }
 
   function sendCardCreated () {
@@ -33,13 +33,13 @@ var Networking = (function() {
   }
 
   function sendCardDestroyed(id) {
-    sendMessage('card-destroyed', {id: id});
+    sendMessage('client:card-destroyed', {id: id});
   }
 
   module.bind('card-grabbed', sendCardGrabbed);
   module.bind('card-letgo', sendCardLetGo);
   module.bind('card-moving', sendCardMoving);
-  module.bind('local-card-created', sendCardCreated);
+  module.bind('card-created', sendCardCreated);
   module.bind('card-destroyed', sendCardDestroyed);
 
   function triggerEvent(topic, data) {
@@ -48,15 +48,15 @@ var Networking = (function() {
   }
 
   socket.on('server:card-moving', function (data) {
-    triggerEvent('card-moved', data);
+    triggerEvent('remote:card-moving', data);
   });
 
   socket.on('server:new-person', function(data) {
-    triggerEvent('user-joined', data);
+    triggerEvent('remote:user-joined', data);
   });
 
   socket.on('server:card-created', function(data) {
-    triggerEvent('remote-card-created', data);
+    triggerEvent('remote:card-created', data);
   });
 
   return module;
