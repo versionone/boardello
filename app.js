@@ -35,7 +35,7 @@ app.get('/', function(req, res){
 });
 
 app.post('/signup', function(req, res){
-  io.sockets.in('app').emit('new-person', req.param('username'));
+  io.sockets.in('app').emit('server:new-user', req.param('username'));
   res.redirect('/board');
 });
 

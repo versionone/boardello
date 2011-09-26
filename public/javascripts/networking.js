@@ -51,8 +51,8 @@ var Networking = (function() {
     triggerEvent('remote:card-moving', data);
   });
 
-  socket.on('server:new-person', function(data) {
-    triggerEvent('remote:user-joined', data);
+  socket.on('server:new-user', function(data) {
+    triggerEvent('remote:new-user', data);
   });
 
   socket.on('server:card-created', function(data) {

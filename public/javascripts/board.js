@@ -26,19 +26,22 @@ var BoardView = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded') // every function that uses 'this' as the current object should be in here
+		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser') // every function that uses 'this' as the current object should be in here
 
 		var model = this.model
 
 		this.model.bind('change:title', this.titleChanged)
 		this.model.get('cards').bind('add', this.cardAdded)
 
+    Networking.bind('remote:new-user', this.newUser);
+
 		this.render()
 	},
 
 	render: function(){
 		$(this.el).html('<table class="board"><tr><td><span class="title">'+this.model.get('title')+'</span><button class="change-title">change title</button><button class="add-card">add card</button></td></tr><tr><td class="cards"></td></tr></table')
-		$('body').append(this.el)
+    $(this.el).append('<div class="users"><div>');
+		$('body').append(this.el);
 		return this
 	},
 
@@ -65,5 +68,9 @@ var BoardView = Backbone.View.extend({
 			model: card
 		})
 		$(this.el).append(cardView.render().el)
-	}
+	},
+
+  newUser: function(name) {
+    this.$('.users').append('<div class="user">' + name + '</div>');
+  }
 })
