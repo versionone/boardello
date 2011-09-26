@@ -28,8 +28,8 @@ var Networking = (function() {
     sendMessage('client:card-moving', {id: id, x: x, y: y});
   }
 
-  function sendCardCreated () {
-    sendMessage('client:card-created');
+  function sendCardCreated (card) {
+    sendMessage('client:card-created', card);
   }
 
   function sendCardDestroyed(id) {

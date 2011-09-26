@@ -1,4 +1,8 @@
 var Card = Backbone.Model.extend({
+		initialize: function(){
+					this.set({id: 1 + Math.random() * 100000000000000000})
+		},
+		
 		defaults: {
 			'title': 'New Card'
 		}
@@ -17,6 +21,7 @@ var CardView = Backbone.View.extend({
 
 		this.model.bind('change', this.render)
 		this.model.bind('remove', this.unrender)
+
 	},
 	
 	render: function(){
