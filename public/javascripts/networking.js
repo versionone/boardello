@@ -29,7 +29,8 @@ var Networking = (function() {
   }
 
   function sendCardCreated () {
-    sendMessage('card-created');
+    debugger
+    sendMessage('client:card-created');
   }
 
   function sendCardDestroyed(id) {
@@ -39,7 +40,7 @@ var Networking = (function() {
   module.bind('card-grabbed', sendCardGrabbed);
   module.bind('card-letgo', sendCardLetGo);
   module.bind('card-moving', sendCardMoving);
-  module.bind('card-created', sendCardCreated);
+  module.bind('local-card-created', sendCardCreated);
   module.bind('card-destroyed', sendCardDestroyed);
 
   function triggerEvent(topic, data) {
@@ -56,7 +57,8 @@ var Networking = (function() {
   });
 
   socket.on('server:card-created', function(data) {
-    triggerEvent('card-created', data);
+    debugger
+    triggerEvent('remote-card-created', data);
   });
 
   return module;

@@ -48,7 +48,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('card-moving', function (data) {
     socket.in('app').emit('server:card-moving', data);
   });
-  socket.on('card-created', function(data) {
+  socket.on('client:card-created', function(data) {
     socket.broadcast.emit('server:card-created', data);
   });
 });
