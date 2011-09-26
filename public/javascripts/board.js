@@ -8,9 +8,7 @@ var Board = Backbone.Model.extend({
       Networking.bind('remote:card-created', this.addCard);
 		},
 
-		addCard: function(title){
-			var card = new Card()
-			card.set({title: title})
+		addCard: function(card){
 			this.get('cards').add(card)
       return card;
 		}
@@ -56,8 +54,10 @@ var BoardView = Backbone.View.extend({
 	},
 
 	addCard: function(){
-		var card = this.model.addCard('new card')
-    Networking.trigger('card-created', card.toJSON())
+		var card = new Card();
+    card.set({title: 'newcard'});
+    this.model.addCard(card);
+    Networking.trigger('card-created', card);
 	},
 
 	cardAdded: function(card){
