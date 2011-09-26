@@ -35,12 +35,16 @@ var Networking = (function() {
   module.bind('card-created', module.sendCardCreated);
   module.bind('card-destroyed', module.sendCardDestroyed);
 
-  socket.on('server/card-moving', function (data) {
+  socket.on('server:card-moving', function (data) {
     module.trigger('card-moved', data);
   });
 
-  socket.on('server/new-person', function(data) {
+  socket.on('server:new-person', function(data) {
     module.trigger('user-joined', data);
+  });
+
+  socket.on('server:card-created', function(data) {
+    module.trigger('card-created', data);
   });
 
   return module;

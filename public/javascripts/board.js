@@ -20,7 +20,7 @@ var Board = Backbone.Model.extend({
 var BoardView = Backbone.View.extend({
 	tagName: 'table',
 	className: 'board',
-	
+
 	events: {
 		'click .change-title': 'changeTitle',
 		'click .add-card': 'addCard'
@@ -29,13 +29,17 @@ var BoardView = Backbone.View.extend({
 	initialize: function(){
 		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded') // every function that uses 'this' as the current object should be in here
 
+    Networking.bind('card-created', function(data) {
+      console.log(data);
+    });
+
 		this.model.bind('change:title', this.titleChanged)
 		this.model.get('cards').bind('add', this.cardAdded)
 		//this.model.bind('change', this.render)
 		//this.model.bind('remove', this.unrender)
 		this.render()
 	},
-	
+
 	render: function(){
 		$(this.el).html('<table class="board"><tr><td><span class="title">'+this.model.get('title')+'</span><button class="change-title">change title</button><button class="add-card">add card</button></td></tr><tr><td class="cards"></td></tr></table')
 		$('body').append(this.el)
