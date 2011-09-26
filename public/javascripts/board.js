@@ -17,7 +17,7 @@ var Board = Backbone.Model.extend({
 
 
 var BoardView = Backbone.View.extend({
-	tagName: 'table',
+	tagName: 'div',
 	className: 'board',
 
 	events: {
@@ -39,7 +39,7 @@ var BoardView = Backbone.View.extend({
 	},
 
 	render: function(){
-		$(this.el).html('<table class="board"><tr><td><span class="title">'+this.model.get('title')+'</span><button class="change-title">change title</button><button class="add-card">add card</button></td></tr><tr><td class="cards"></td></tr></table')
+		$(this.el).html(render('board', this.model.toJSON()))
     $(this.el).append('<div class="users"><div>');
 		$('body').append(this.el);
 		return this

@@ -1,0 +1,18 @@
+script(type='text/javascript')
+	(function(){
+		var jade = require('jade')
+			, templates = {}
+			, templateFunctions = {}
+					
+
+		templates['board'] = 'h1.title \#{title} \\nbutton.change-title change the title \\n\\tbutton.add-card add a new card'
+		templates['card'] = 'div.card\\n\\thi'
+
+		window.render = function(templateName, locals){
+			if (!templateFunctions[templateName])
+				templateFunctions[templateName] = jade.compile(templates[templateName])
+
+			return templateFunctions[templateName](locals)
+		}
+	})()
+
