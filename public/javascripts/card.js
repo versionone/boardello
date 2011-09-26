@@ -25,7 +25,7 @@ var CardView = Backbone.View.extend({
 	},
 	
 	render: function(){
-		$(this.el).html('<span class="title">'+this.model.get('title')+' - '+ this.model.cid + '</span>')
+		$(this.el).html(render('card', this.model.toJSON()))
 		return this
 	},
 

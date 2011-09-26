@@ -6,7 +6,7 @@ script(type='text/javascript')
 					
 
 		templates['board'] = 'h1.title \#{title} \\nbutton.change-title change the title \\n\\tbutton.add-card add a new card'
-		templates['card'] = 'div.card\\n\\thi'
+		templates['card'] = 'h3.title \#{title} \\n\#{id}'
 
 		window.render = function(templateName, locals){
 			if (!templateFunctions[templateName])
