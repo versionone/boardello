@@ -57,6 +57,32 @@ io.sockets.on('connection', function (socket) {
 
 });
 
+
+
+
+var stitch  = require('stitch');
+
+options = {
+  paths : [__dirname + '/views/client'],
+  
+  compilers: {
+    tmpl: function(module, filename)  {
+      var source = require('fs').readFileSync(filename, 'utf8');
+      source = source.replace(/\n/g, '').replace(/'/g, "\'")
+      source = "module.exports = $.template('" + filename.replace(/.+\//g,'') + "', '" + source +"');";
+      module._compile(source, filename);
+    }
+  }
+}
+  
+var package = stitch.createPackage(options);
+
+app.get('/templates', package.createServer());
+
+
+
+
+
 var port = process.env.PORT || 3000;
 
 app.listen(port);
