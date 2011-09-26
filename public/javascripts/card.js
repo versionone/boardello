@@ -1,5 +1,6 @@
 var Card = Backbone.Model.extend({
 		initialize: function(){
+				if (!this.id)
 					this.set({id: 1 + Math.random() * 100000000000000000})
 		},
 		
