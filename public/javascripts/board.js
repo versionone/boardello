@@ -10,6 +10,8 @@ var Board = Backbone.Model.extend({
 			var card = new Card()
 			card.set({title: title})
 			this.get('cards').add(card)
+
+			Networking.trigger('card-created', card)
 		}
 	})
 

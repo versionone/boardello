@@ -2,7 +2,7 @@ var Networking = (function() {
 
   var module = {};
 
-  _.extend(module, Backbone.events);
+  _.extend(module, Backbone.Events);
 
   var url = window.location.origin
       , socket = io.connect(url);
@@ -21,6 +21,7 @@ var Networking = (function() {
   }
 
   function sendCardCreated () {
+    console.log('sending card-created')
     socket.emit('card-created');
   }
 
