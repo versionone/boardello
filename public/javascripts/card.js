@@ -23,10 +23,26 @@ var CardView = Backbone.View.extend({
 		this.model.bind('change', this.render)
 		this.model.bind('remove', this.unrender)
 
+		var _id = this.model.id
+		var $el = $(this.el)
+    Networking.bind('remote:card-moving', function(data){
+    	if (data.id == _id)
+    		$el.css({ //this should be model data
+    			left: data.x,
+    			top: data.y
+    		})
+    });
+
 	},
 	
 	render: function(){
 		$(this.el).html(render('card', this.model.toJSON()))
+		var model = this.model
+		$(this.el).draggable({
+			drag: function(event, ui){
+				Networking.trigger('card-moving', {id: model.id, x: ui.offset.left, y: ui.offset.top})
+			}
+		})
 		return this
 	},
 

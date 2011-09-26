@@ -24,8 +24,8 @@ var Networking = (function() {
     sendMessage('client:card-letgo', {id: id});
   }
 
-  function sendCardMoving (id, x, y) {
-    sendMessage('client:card-moving', {id: id, x: x, y: y});
+  function sendCardMoving (data) {
+    sendMessage('client:card-moving', data);
   }
 
   function sendCardCreated (card) {

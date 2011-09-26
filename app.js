@@ -48,7 +48,7 @@ io.sockets.on('connection', function (socket) {
   socket.join('app'); // our app has one channel!
 
   socket.on('client:card-moving', function (data) {
-    socket.in('app').emit('server:card-moving', data);
+    socket.broadcast.emit('server:card-moving', data);
   });
 
   socket.on('client:card-created', function(data) {
