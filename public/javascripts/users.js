@@ -21,6 +21,7 @@ var UserView = Backbone.View.extend({
   render: function() {
     $el = $(this.el);
     $el.html(this.model.get('name'));
+    $el.attr('data-username', this.model.get('name'));
     return this;
   }
 

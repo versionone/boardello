@@ -50,7 +50,14 @@ var BoardView = Backbone.View.extend({
 		this.model.get('users').bind('add', this.userAdded)
 
     Networking.bind('remote:initial-state', this.renderInitialState);
-    Networking.bind('remote:cursor-movement', function(data) { console.log(data); });
+    Networking.bind('remote:cursor-movement', function(data) { 
+    	console.log(data)
+   		$user = $(".users .user[data-username=" + data.username + "]");
+    	$user.css('position', 'absolute');
+    	$user.css('z-index', 1000);
+    	$user.css({top: data.y, left: data.x});    	
+		});
+
     Networking.bind('remote:clear-board', function(data) { model.clear(); });
 
 
