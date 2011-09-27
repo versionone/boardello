@@ -43,7 +43,6 @@ var CardView = Backbone.View.extend({
 
     $el.html(render('card', this.model.toJSON()))
 
-      debugger
     $el.css({ //this should be model data
       left: this.model.get('x'),
       top: this.model.get('y')
@@ -57,7 +56,7 @@ var CardView = Backbone.View.extend({
       stop: function(event, ui) {
         console.log(ui)
         model.set({x: ui.position.left, y: ui.position.top});
-				Networking.trigger('card-moving', {id: model.id, x: ui.position.left, y: ui.position.top})
+				Networking.trigger('card-letgo', {id: model.id, x: ui.position.left, y: ui.position.top})
       }
 		})
 		return this

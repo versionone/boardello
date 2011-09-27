@@ -81,7 +81,8 @@ var BoardView = Backbone.View.extend({
 		var cardView = new CardView({
 			model: card
 		})
-		$(this.el).append(cardView.render().el)
+		$(this.el).append(cardView.el)
+		cardView.render()
 	},
 
   newUser: function(name) {

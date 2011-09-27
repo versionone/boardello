@@ -57,7 +57,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('client:card-letgo', function(card) {
-    cards[data.id] = data;
+    cards[card.id] = card;
     socket.broadcast.emit('server:card-letgo', card);
   });
 
