@@ -70,6 +70,10 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('server:card-created', data);
   });
 
+  socket.on('client:clear-board', function(data) {
+    cards = {};
+    socket.broadcast.emit('server:clear-board', data);
+  });
 });
 
 

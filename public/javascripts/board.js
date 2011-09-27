@@ -11,6 +11,10 @@ var Board = Backbone.Model.extend({
 		addCard: function(card){
 			this.get('cards').add(card)
       return card;
+		},
+
+		clear: function() {
+			this.get('cards').reset()
 		}
   })
 
@@ -22,20 +26,25 @@ var BoardView = Backbone.View.extend({
 
 	events: {
 		'click .change-title': 'changeTitle',
-		'dblclick': 'addCard'
+		'dblclick': 'addCard',
+		'click .clear': 'clear'
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser', 'renderInitialState') // every function that uses 'this' as the current object should be in here
+		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser', 'renderInitialState', 'clear') 
 
 		var model = this.model
 
 		this.model.bind('change:title', this.titleChanged)
 		this.model.get('cards').bind('add', this.cardAdded)
+		this.model.get('cards').bind('reset', this.render)
+
 
     Networking.bind('remote:new-user', this.newUser);
     Networking.bind('remote:initial-state', this.renderInitialState);
     Networking.bind('remote:cursor-movement', function(data) { console.log(data); });
+    Networking.bind('remote:clear-board', function(data) { model.clear(); });
+
 
 		this.render()
 	},
@@ -87,5 +96,12 @@ var BoardView = Backbone.View.extend({
 
   newUser: function(name) {
     this.$('.users').append('<div class="user">' + name + '</div>');
+  },
+
+  clear: function(){
+		if (confirm('are you sure?')) {
+			this.model.clear();
+    	Networking.trigger('clear-board', this.model.toJSON());
+  	}
   }
 })

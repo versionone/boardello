@@ -36,6 +36,10 @@ var Networking = (function() {
     sendMessage('client:card-destroyed', {id: id});
   }
 
+  function sendClearBoard(board) {
+    sendMessage('client:clear-board', board);
+  }
+
   function sendCursorMovement(data) {
     // sendMessage('client:cursor-movement', data);
   }
@@ -46,6 +50,7 @@ var Networking = (function() {
   module.bind('card-created', sendCardCreated);
   module.bind('card-destroyed', sendCardDestroyed);
   module.bind('cursor-movement', sendCursorMovement);
+  module.bind('clear-board', sendClearBoard);
 
   function triggerEvent(topic, data) {
     if (data.clientId === clientId) return;
@@ -80,6 +85,9 @@ var Networking = (function() {
       triggerEvent('remote:card-created', data);
     });
 
+    socket.on('server:clear-board', function(data) {
+      triggerEvent('remote:clear-board', data);
+    });
   };
 
   return module;
