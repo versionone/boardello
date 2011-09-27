@@ -4,12 +4,12 @@ script(type='text/javascript', src='javascripts/board.js')
 
 script(type='text/javascript')
 
-  var board1 = new Board();
+  var board = new Board();
 
-  board1.set({title: 'dan lash'})
+  board.set({title: 'Boardello of Awesome'})
 
-  var board1View = new BoardView({
-  model: board1,
-    id: 'boardview-' + board1.id
+  var boardView = new BoardView({
+    model: board,
+    id: 'boardview-' + board.id
   })
 
