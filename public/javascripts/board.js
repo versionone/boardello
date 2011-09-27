@@ -22,7 +22,7 @@ var BoardView = Backbone.View.extend({
 
 	events: {
 		'click .change-title': 'changeTitle',
-		'click .add-card': 'addCard'
+		'dblclick': 'addCard'
 	},
 
 	initialize: function(){
@@ -70,9 +70,9 @@ var BoardView = Backbone.View.extend({
 		$(this.el).find('.title').html(this.model.get('title'))
 	},
 
-	addCard: function(){
+	addCard: function(e){
 		var card = new Card();
-    card.set({title: 'newcard'});
+    card.set({title: 'newcard', x: e.clientX, y: e.clientY});
     this.model.addCard(card);
     Networking.trigger('card-created', card);
 	},
