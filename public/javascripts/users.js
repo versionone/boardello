@@ -10,8 +10,13 @@ var Users = Backbone.Collection.extend({
 
 var UserView = Backbone.View.extend({
 
-	tagName: 'div',
+	tagName: 'li',
 	className: 'user',
+
+  initialize: function(){
+    _.bindAll(this, 'render')
+
+  },
 
   render: function() {
     $el = $(this.el);

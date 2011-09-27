@@ -1,17 +1,7 @@
-Backbone.Model.prototype.toJSON = function() {
-  var attrs = _.clone(this.attributes);
-  var rattrs = {}
-  _.each(attrs, function(attr){
-    if (attr instanceof Backbone.Collection)
-      attr = attr.toJSON()
-
-  })
-}
-
 var Board = Backbone.Model.extend({
 
     initialize: function(){
-			_.bindAll(this, 'addCard'); // every function that uses 'this' as the current object should be in here
+			_.bindAll(this, 'addCard', 'clear', 'newUser'); // every function that uses 'this' as the current object should be in here
 
 			this.set({cards: new Cards(), users: new Users()});
 
@@ -28,8 +18,11 @@ var Board = Backbone.Model.extend({
 			this.get('cards').reset()
 		},
 
-    newUser: function(user) {
+    newUser: function(userName) {
+    	var user = new User()
+    	user.set({name: userName})
 			this.get('users').add(user)
+			return user;
     }
   });
 
@@ -46,7 +39,7 @@ var BoardView = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser', 'renderInitialState', 'clear', 'userAdded')
+		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'renderInitialState', 'clear', 'userAdded')
 
 		var model = this.model
 
@@ -73,8 +66,10 @@ var BoardView = Backbone.View.extend({
 
 	render: function(){
 		$(this.el).html(render('board', this.model.toJSON()))
+		_.each(this.model.get('users').models, this.userAdded);
+
 		$('body').append(this.el);
-debugger
+
     $(document).mousemove(function(e) {
       Networking.trigger('cursor-movement', { username: 'bob', x: e.pageX, y: e.pageY });
     });
@@ -108,14 +103,9 @@ debugger
 
 	userAdded: function(user){
 		var userView = new UserView({ model: user });
-		this.el.$('.users').append(userView.el)
+		this.$('.users').append(userView.el)
 		userView.render()
 	},
-
-  newUser: function(name) {
-    this.model.newUser(name);
-    this.$('.users').append('<div class="user">' + name + '</div>');
-  },
 
   clear: function(){
 		if (confirm('are you sure?')) {

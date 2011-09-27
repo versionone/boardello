@@ -6,9 +6,7 @@ script(type='text/javascript')
 
   var board = new Board();
 
-  _.each("#{users}".split(','), function(user) {
-    board.newUser(user);
-  });
+  _.each("#{users}".split(','), board.newUser);
 
   board.set({title: 'Boardello of Awesome' });
 

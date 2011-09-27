@@ -44,7 +44,10 @@ app.post('/signup', function(req, res){
 });
 
 app.get('/board', function(req, res){
-  if (!req.session.username) res.redirect('/');
+  if (!req.session.username)  {
+    res.redirect('/');
+    return
+  }
   res.render('board', {users: users, me: req.session.username});
 });
 
