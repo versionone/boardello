@@ -1,10 +1,21 @@
+Backbone.Model.prototype.toJSON = function() {
+  var attrs = _.clone(this.attributes);
+  var rattrs = {}
+  _.each(attrs, function(attr){
+    if (attr instanceof Backbone.Collection)
+      attr = attr.toJSON()
+
+  })
+}
+
 var Board = Backbone.Model.extend({
-		initialize: function(){
-			_.bindAll(this, 'addCard') // every function that uses 'this' as the current object should be in here
 
-			var cards = new Cards()
-			this.set({cards: cards})
+    initialize: function(){
+			_.bindAll(this, 'addCard'); // every function that uses 'this' as the current object should be in here
 
+			this.set({cards: new Cards(), users: new Users()});
+
+      Networking.bind('remote:new-user', this.newUser);
       Networking.bind('remote:card-created', this.addCard);
 		},
 
@@ -15,8 +26,12 @@ var Board = Backbone.Model.extend({
 
 		clear: function() {
 			this.get('cards').reset()
-		}
-  })
+		},
+
+    newUser: function(user) {
+			this.get('users').add(user)
+    }
+  });
 
 
 
@@ -31,7 +46,7 @@ var BoardView = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser', 'renderInitialState', 'clear') 
+		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser', 'renderInitialState', 'clear', 'userAdded')
 
 		var model = this.model
 
@@ -39,8 +54,8 @@ var BoardView = Backbone.View.extend({
 		this.model.get('cards').bind('add', this.cardAdded)
 		this.model.get('cards').bind('reset', this.render)
 
+		this.model.get('users').bind('add', this.userAdded)
 
-    Networking.bind('remote:new-user', this.newUser);
     Networking.bind('remote:initial-state', this.renderInitialState);
     Networking.bind('remote:cursor-movement', function(data) { console.log(data); });
     Networking.bind('remote:clear-board', function(data) { model.clear(); });
@@ -58,9 +73,8 @@ var BoardView = Backbone.View.extend({
 
 	render: function(){
 		$(this.el).html(render('board', this.model.toJSON()))
-    $(this.el).append('<div class="users"><div>');
 		$('body').append(this.el);
-
+debugger
     $(document).mousemove(function(e) {
       Networking.trigger('cursor-movement', { username: 'bob', x: e.pageX, y: e.pageY });
     });
@@ -87,14 +101,19 @@ var BoardView = Backbone.View.extend({
 	},
 
 	cardAdded: function(card){
-		var cardView = new CardView({
-			model: card
-		})
+		var cardView = new CardView({ model: card });
 		$(this.el).append(cardView.el)
 		cardView.render()
 	},
 
+	userAdded: function(user){
+		var userView = new UserView({ model: user });
+		this.el.$('.users').append(userView.el)
+		userView.render()
+	},
+
   newUser: function(name) {
+    this.model.newUser(name);
     this.$('.users').append('<div class="user">' + name + '</div>');
   },
 

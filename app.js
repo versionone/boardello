@@ -37,14 +37,19 @@ app.get('/', function(req, res){
 
 app.post('/signup', function(req, res){
   io.sockets.in('app').emit('server:new-user', req.param('username'));
+  var username = req.param('username');
+  users.push(username);
+  req.session.username = username;
   res.redirect('/board');
 });
 
 app.get('/board', function(req, res){
-  res.render('board');
+  if (!req.session.username) res.redirect('/');
+  res.render('board', {users: users, me: req.session.username});
 });
 
 var cards = {};
+var users = [];
 
 io.sockets.on('connection', function (socket) {
 

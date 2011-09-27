@@ -41,7 +41,7 @@ var Networking = (function() {
   }
 
   function sendCursorMovement(data) {
-    // sendMessage('client:cursor-movement', data);
+    sendMessage('client:cursor-movement', data);
   }
 
   module.bind('card-grabbed', sendCardGrabbed);

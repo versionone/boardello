@@ -1,4 +1,4 @@
-script(type='text/javascript', src='javascripts/card.js')
+script(type='text/javascript', src='javascripts/users.js')
 script(type='text/javascript', src='javascripts/cards.js')
 script(type='text/javascript', src='javascripts/board.js')
 
@@ -6,7 +6,11 @@ script(type='text/javascript')
 
   var board = new Board();
 
-  board.set({title: 'Boardello of Awesome'})
+  _.each("#{users}".split(','), function(user) {
+    board.newUser(user);
+  });
+
+  board.set({title: 'Boardello of Awesome' });
 
   var boardView = new BoardView({
     model: board,
