@@ -8,7 +8,7 @@ script(type='text/javascript')
 
   _.each("#{users}".split(','), board.newUser);
 
-  board.set({title: 'Boardello of Awesome' });
+  board.set({title: 'Boardello of Awesome', me: "#{me}" });
 
   var boardView = new BoardView({
     model: board,
@@ -17,3 +17,4 @@ script(type='text/javascript')
 
   Networking.start();
 
+input(type='hidden',name='me',id='me',value="#{me}")

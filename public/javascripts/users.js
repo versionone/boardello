@@ -10,7 +10,7 @@ var Users = Backbone.Collection.extend({
 
 var UserView = Backbone.View.extend({
 
-	tagName: 'li',
+	tagName: 'div',
 	className: 'user',
 
   initialize: function(){

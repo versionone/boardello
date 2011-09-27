@@ -52,9 +52,8 @@ var BoardView = Backbone.View.extend({
     Networking.bind('remote:initial-state', this.renderInitialState);
     Networking.bind('remote:cursor-movement', function(data) { 
     	console.log(data)
-   		$user = $(".users .user[data-username=" + data.username + "]");
-    	$user.css('position', 'absolute');
-    	$user.css('z-index', 1000);
+   		$user = $(".user[data-username=" + data.username + "]");
+    	$user.show();
     	$user.css({top: data.y, left: data.x});    	
 		});
 
@@ -77,8 +76,10 @@ var BoardView = Backbone.View.extend({
 
 		$('body').append(this.el);
 
+		var model = this.model;
+
     $(document).mousemove(function(e) {
-      Networking.trigger('cursor-movement', { username: 'bob', x: e.pageX, y: e.pageY });
+      Networking.trigger('cursor-movement', { username: model.get('me'), x: e.pageX, y: e.pageY });
     });
 
 		return this
@@ -110,8 +111,8 @@ var BoardView = Backbone.View.extend({
 
 	userAdded: function(user){
 		var userView = new UserView({ model: user });
-		this.$('.users').append(userView.el)
-		userView.render()
+		$(this.el).append(userView.el);
+		userView.render();
 	},
 
   clear: function(){
