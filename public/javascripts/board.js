@@ -26,7 +26,7 @@ var BoardView = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser') // every function that uses 'this' as the current object should be in here
+		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'newUser', 'renderInitialState') // every function that uses 'this' as the current object should be in here
 
 		var model = this.model
 
@@ -44,6 +44,10 @@ var BoardView = Backbone.View.extend({
 	},
 
   renderInitialState: function(cards) {
+    var model = this.model;
+    _.each(cards, function(card) {
+      model.addCard(card);
+    });
     console.log(cards);
   },
 
