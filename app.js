@@ -1,6 +1,7 @@
 var express = require('express')
     , app = module.exports = express.createServer()
-    , io = require('socket.io').listen(app);
+    , io = require('socket.io').listen(app)
+    , _ = require('underscore');
 // Configuration
 
 app.configure(function(){
@@ -43,16 +44,21 @@ app.get('/board', function(req, res){
   res.render('board');
 });
 
-var cards = [];
+var cards = {};
 
 io.sockets.on('connection', function (socket) {
 
   socket.join('app'); // our app has one channel!
 
-  socket.emit('server:initial-state', cards);
+  socket.emit('server:initial-state', _.values(cards));
 
   socket.on('client:card-moving', function (data) {
     socket.broadcast.emit('server:card-moving', data);
+  });
+
+  socket.on('client:card-letgo', function(card) {
+    cards[data.id] = data;
+    socket.broadcast.emit('server:card-letgo', card);
   });
 
   socket.on('client:cursor-movement', function (data) {
@@ -60,7 +66,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('client:card-created', function(data) {
-    cards.push(data);
+    cards[data.id] = data;
     socket.broadcast.emit('server:card-created', data);
   });
 

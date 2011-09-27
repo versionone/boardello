@@ -20,8 +20,8 @@ var Networking = (function() {
     sendMessage('client:card-grabbed', {id: id, user: user});
   }
 
-  function sendCardLetGo (id) {
-    sendMessage('client:card-letgo', {id: id});
+  function sendCardLetGo (card) {
+    sendMessage('client:card-letgo', card);
   }
 
   function sendCardMoving (data) {
@@ -66,6 +66,10 @@ var Networking = (function() {
 
     socket.on('server:card-moving', function (data) {
       triggerEvent('remote:card-moving', data);
+    });
+
+    socket.on('server:card-letgo', function (data) {
+      triggerEvent('remote:card-letgo', data);
     });
 
     socket.on('server:new-user', function(data) {
