@@ -3,9 +3,11 @@ var Card = Backbone.Model.extend({
 				if (!this.id)
 					this.set({id: 1 + Math.random() * 100000000000000000})
 		},
-		
+
 		defaults: {
-			'title': 'New Card'
+			'title': 'New Card',
+      'x': 0,
+      'y': 0
 		}
 	})
 
@@ -13,7 +15,7 @@ var Card = Backbone.Model.extend({
 var CardView = Backbone.View.extend({
 	tagName: 'div',
 	className: 'card',
-	
+
 	events: {
 	},
 
@@ -34,14 +36,27 @@ var CardView = Backbone.View.extend({
     });
 
 	},
-	
+
 	render: function(){
-		$(this.el).html(render('card', this.model.toJSON()))
+
+		var $el = $(this.el)
+
+    $el.html(render('card', this.model.toJSON()))
+
+    $el.css({ //this should be model data
+      left: this.model.get('x'),
+      top: this.model.get('y')
+    })
+
 		var model = this.model
 		$(this.el).draggable({
 			drag: function(event, ui){
-				Networking.trigger('card-moving', {id: model.id, x: ui.offset.left, y: ui.offset.top})
-			}
+				Networking.trigger('card-moving', {id: model.id, x: ui.position.left, y: ui.position.top})
+			},
+      stop: function(event, ui) {
+        console.log(ui)
+        model.set({x: ui.position.left, y: ui.position.top});
+      }
 		})
 		return this
 	},

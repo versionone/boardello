@@ -35,10 +35,7 @@ var BoardView = Backbone.View.extend({
 
     Networking.bind('remote:new-user', this.newUser);
     Networking.bind('remote:initial-state', this.renderInitialState);
-
-    Networking.bind('remote:cursor-movement', function(data) {
-      console.log(data);
-    });
+    Networking.bind('remote:cursor-movement', function(data) { console.log(data); });
 
 		this.render()
 	},
@@ -48,7 +45,6 @@ var BoardView = Backbone.View.extend({
     _.each(cards, function(card) {
       model.addCard(card);
     });
-    console.log(cards);
   },
 
 	render: function(){
