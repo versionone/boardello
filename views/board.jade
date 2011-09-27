@@ -11,5 +11,7 @@ script(type='text/javascript')
   var boardView = new BoardView({
     model: board,
     id: 'boardview-' + board.id
-  })
+  });
+
+  Networking.start();
 

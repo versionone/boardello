@@ -43,9 +43,13 @@ app.get('/board', function(req, res){
   res.render('board');
 });
 
+var cards = [];
+
 io.sockets.on('connection', function (socket) {
 
   socket.join('app'); // our app has one channel!
+
+  socket.emit('server:initial-state', cards);
 
   socket.on('client:card-moving', function (data) {
     socket.broadcast.emit('server:card-moving', data);
@@ -56,19 +60,18 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('client:card-created', function(data) {
+    cards.push(data);
     socket.broadcast.emit('server:card-created', data);
   });
 
 });
 
 
-
-
 var stitch  = require('stitch');
 
 options = {
   paths : [__dirname + '/views/client'],
-  
+
   compilers: {
     tmpl: function(module, filename)  {
       var source = require('fs').readFileSync(filename, 'utf8');
@@ -78,7 +81,7 @@ options = {
     }
   }
 }
-  
+
 var package = stitch.createPackage(options);
 
 app.get('/templates', package.createServer());

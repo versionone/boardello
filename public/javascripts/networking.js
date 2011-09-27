@@ -6,8 +6,8 @@ var Networking = (function() {
 
   _.extend(module, Backbone.Events);
 
-  var url = window.location.origin
-      , socket = io.connect(url);
+  var url = window.location.origin,
+      socket;
 
   function sendMessage(topic, data) {
     data = data || {};
@@ -37,7 +37,7 @@ var Networking = (function() {
   }
 
   function sendCursorMovement(data) {
-    sendMessage('client:cursor-movement', data);
+    // sendMessage('client:cursor-movement', data);
   }
 
   module.bind('card-grabbed', sendCardGrabbed);
@@ -52,21 +52,31 @@ var Networking = (function() {
     module.trigger(topic, data);
   }
 
-  socket.on('server:cursor-movement', function (data) {
-    triggerEvent('remote:cursor-movement', data);
-  });
+  module.start = function () {
 
-  socket.on('server:card-moving', function (data) {
-    triggerEvent('remote:card-moving', data);
-  });
+    socket = io.connect(url);
 
-  socket.on('server:new-user', function(data) {
-    triggerEvent('remote:new-user', data);
-  });
+    socket.on('server:initial-state', function (data) {
+      triggerEvent('remote:initial-state', data);
+    });
 
-  socket.on('server:card-created', function(data) {
-    triggerEvent('remote:card-created', data);
-  });
+    socket.on('server:cursor-movement', function (data) {
+      triggerEvent('remote:cursor-movement', data);
+    });
+
+    socket.on('server:card-moving', function (data) {
+      triggerEvent('remote:card-moving', data);
+    });
+
+    socket.on('server:new-user', function(data) {
+      triggerEvent('remote:new-user', data);
+    });
+
+    socket.on('server:card-created', function(data) {
+      triggerEvent('remote:card-created', data);
+    });
+
+  };
 
   return module;
 
