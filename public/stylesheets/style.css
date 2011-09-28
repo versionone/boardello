@@ -20,6 +20,7 @@ a {
   right: 0;
   top: 0;
   bottom: 0;
+  background: url(../images/grid.png);
 }
 .board > .title {
   text-align: center;
@@ -36,25 +37,23 @@ a {
   border: 1px solid #C2C2C2;
   background-color: #F7F0BC;
   position: absolute;
-  height: 150px;
-  width: 250px;
+  height: 90px;
+  width: 150px;
   z-index: 0;
 }
-.card .tape-left {
-  position: absolute;
-  background: url(../images/tape-left.png);
-  top: -26px;
-  left: -29px;
-  z-index: 1;
-  height: 76px;
-  width: 92px;
+.card .title {
+  width: 100%;
+  height: 100%;
+  vertical-align: center;
+  font-family: 'Marker Felt', 'Comic Sans';
+  font-size: 18px;
 }
-.card .tape-right {
+.card .tape {
   position: absolute;
-  background: url(../images/tape-right.png);
-  top: -30px;
-  right: -29px;
+  background: url(../images/tape.png);
+  top: -18px;
+  left: 47px;
   z-index: 1;
-  height: 76px;
-  width: 92px;
+  height: 29px;
+  width: 58px;
 }
