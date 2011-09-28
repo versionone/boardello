@@ -40,9 +40,14 @@ a {
   width: 156px;
   z-index: 0;
 }
-.card button.delete {
+.card .delete {
   position: absolute;
   z-index: 2;
+  background: url('../images/close-card.png');
+  opacity: 0.5;
+  cursor: pointer;
+  width: 25px;
+  height: 22px;
   top: 3px;
   right: 3px;
 }
@@ -66,7 +71,7 @@ a {
 .card .tape {
   position: absolute;
   background: url(../images/tape.png);
-  top: -18px;
+  top: -15px;
   left: 47px;
   z-index: 1;
   height: 29px;
