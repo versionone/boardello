@@ -50,7 +50,7 @@ var CardView = Backbone.View.extend({
 	className: 'card',
 
 	events: {
-    'click .delete': 'delete'
+    'click .delete': 'delete',
     'dblclick .title' : 'poop'
 	},
 
@@ -92,6 +92,7 @@ var CardView = Backbone.View.extend({
   delete: function(){
     if (confirm('are you sure?'))
       this.model.delete();
+  },
 
   poop: function(e) {
     e.stopPropagation();
