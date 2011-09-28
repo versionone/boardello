@@ -27,6 +27,7 @@ a {
   border-bottom: 1px solid black;
 }
 .user {
+  display: none;
   border: 1px solid red;
   padding: 10px;
   z-index: 1000;

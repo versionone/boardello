@@ -10,8 +10,7 @@ var User = Backbone.Model.extend({
     if (!model.id) model.set({id: 1 + Math.random() * 100000000000000000})
 
     Networking.bind('remote:cursor-movement', function(data) { 
-      if (data.id == model.id)
-        model.set({left: data.left, top: data.top}, { remote: true });
+      if (data.id == model.id) model.moveCursor(data.left, data.top, true)
     });
 
     _.each(['change:top', 'change:left'], function(topic){
@@ -20,6 +19,10 @@ var User = Backbone.Model.extend({
           Networking.trigger('cursor-movement', model.toJSON());
       });
     });
+  },
+
+  moveCursor: function(left, top, remote) {
+    this.set({left: left, top: top}, { remote: remote });    
   }
 });
 
@@ -37,21 +40,32 @@ var UserView = Backbone.View.extend({
 
     var model = this.model,
         view = this;
-    model.bind('change', this.render);
+
+    if (!view.isMe()) {
+      model.bind('change', this.render);
+    }
 
     if (view.isMe()) {
       $(document).mousemove(function(e) {
-         model.set({left: e.pageX, top: e.pageY});
+         model.moveCursor(e.pageX, e.pageY);
       });
     }
   },
 
   render: function() {
+    if (this.isMe()) return this;
+
     var $el = $(this.el);
     $el.html(this.model.get('name'));
     $el.attr('data-id', this.model.id);
     $el.css({top: this.model.get('top'), left: this.model.get('left')});
-    $el.show();
+
+    $el.fadeIn(100);
+    clearTimeout(this.lastTimeout);
+    this.lastTimeout = setTimeout(function(){
+      $el.fadeOut(500);
+    }, 1000)
+
     return this;
   },
 
