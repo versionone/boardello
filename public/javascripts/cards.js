@@ -15,15 +15,29 @@ var Card = Backbone.Model.extend({
           model.move(data.left, data.top, true)
         }
       });
+      Networking.bind('remote:card-destroyed', function(data){
+        if (data.id == model.id) {
+          model.delete(true)
+        }
+      });
 
-      model.bind('change', function(_card, options) {
-        if (!options.remote)
-          Networking.trigger('card-moving', model.toJSON())
-      })
+      model
+        .bind('change', function(_card, options) {
+          if (!options.remote)
+            Networking.trigger('card-moving', model.toJSON());
+        })
+        .bind('destroy', function(_card, collection, options) {
+          if (!options.remote)
+            Networking.trigger('card-destroyed', model.toJSON());
+        })
 		},
 
     move: function(left, top, remote){
       this.set({left: left, top: top}, { remote: remote })
+    },
+
+    delete: function(remote) {
+      this.trigger('destroy', this, this.collection, { remote: remote });
     }
 	})
 
@@ -36,13 +50,16 @@ var CardView = Backbone.View.extend({
 	className: 'card',
 
 	events: {
+    'click .delete': 'delete'
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render')
+		_.bindAll(this, 'render', 'unrender', 'delete')
 
-		this.model.bind('change', this.render)
-		this.model.bind('remove', this.unrender)
+    var model = this.model;
+
+		model.bind('change', this.render)
+    model.bind('destroy', this.unrender)
 	},
 
 	render: function(){
@@ -64,6 +81,15 @@ var CardView = Backbone.View.extend({
 			grid: [10,10]
 		})
 		return this
-	}
+	},
+
+  unrender: function(){
+    $(this.el).remove()
+  },
+
+  delete: function(){
+    if (confirm('are you sure?'))
+      this.model.delete();
+  }
 });
 

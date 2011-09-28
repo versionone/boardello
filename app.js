@@ -78,6 +78,11 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('server:card-letgo', card);
   });
 
+  socket.on('client:card-destroyed', function(card) {
+    delete cards[card.id];
+    socket.broadcast.emit('server:card-destroyed', card);
+  });
+
   socket.on('client:cursor-movement', function (user) {
     users[user.id] = user;
     socket.broadcast.emit('server:cursor-movement', user);
