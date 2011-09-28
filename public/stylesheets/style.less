@@ -53,11 +53,6 @@ a {
   height: 95px;
   width: 151px;
   z-index: 0;
-  &:hover {
-    .delete {
-      opacity: 0.5;
-    }
-  }
   .delete {
     position: absolute;
     z-index: 2;
@@ -68,6 +63,9 @@ a {
     height: 22px;
     top: 1px;
     right: 4px;
+    &:hover {
+      opacity: 0.5;
+    }
   }
   .title {
     width: 100%;
