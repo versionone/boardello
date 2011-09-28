@@ -1,14 +1,30 @@
 var Card = Backbone.Model.extend({
+    defaults: {
+      'title': 'New Card',
+      'left': 0,
+      'top': 0
+    },
+
 		initialize: function(){
-				if (!this.id)
-					this.set({id: 1 + Math.random() * 100000000000000000})
+      var model = this
+      _.bindAll(model, 'move')
+			if (!model.id) model.set({id: 1 + Math.random() * 100000000000000000})
+
+      Networking.bind('remote:card-moving', function(data) {
+        if (data.id == model.id) {
+          model.move(data.left, data.top, true)
+        }
+      });
+
+      model.bind('change', function(_card, options) {
+        if (!options.remote)
+          Networking.trigger('card-moving', model.toJSON())
+      })
 		},
 
-		defaults: {
-			'title': 'New Card',
-      'x': 0,
-      'y': 0
-		}
+    move: function(left, top, remote){
+      this.set({left: left, top: top}, { remote: remote })
+    }
 	})
 
 var Cards = Backbone.Collection.extend({
@@ -23,48 +39,30 @@ var CardView = Backbone.View.extend({
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'unrender') // every function that uses 'this' as the current object should be in here
+		_.bindAll(this, 'render')
 
 		this.model.bind('change', this.render)
 		this.model.bind('remove', this.unrender)
-
-		var _id = this.model.id
-		var $el = $(this.el)
-    Networking.bind('remote:card-moving', function(data){
-    	if (data.id == _id)
-    		$el.css({ //this should be model data
-    			left: data.x,
-    			top: data.y
-    		})
-    });
-
 	},
 
 	render: function(){
 
 		var $el = $(this.el)
+    var model = this.model
 
-    $el.html(render('card', this.model.toJSON()))
+    $el.html(render('card', model.toJSON()))
 
-    $el.css({ //this should be model data
-      left: this.model.get('x'),
-      top: this.model.get('y')
+    $el.css({
+      left: model.get('left'),
+      top: model.get('top')
     })
 
-		var model = this.model
 		$(this.el).draggable({
 			drag: function(event, ui){
-				Networking.trigger('card-moving', {id: model.id, x: ui.position.left, y: ui.position.top})
-			},
-      stop: function(event, ui) {
-        console.log(ui)
-        model.set({x: ui.position.left, y: ui.position.top});
-				Networking.trigger('card-letgo', {id: model.id, x: ui.position.left, y: ui.position.top})
-      }
+        model.move(ui.position.left, ui.position.top);
+			}
 		})
 		return this
-	},
-
-	unrender: function() {}
-})
+	}
+});
 
