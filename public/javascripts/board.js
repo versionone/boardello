@@ -1,7 +1,7 @@
 var Board = Backbone.Model.extend({
   initialize: function(){
     var model = this;
-		_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize'); 
+		_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize');
 
 		model.set({cards: new Cards(), users: new Users()});
 
@@ -72,9 +72,7 @@ var BoardView = Backbone.View.extend({
 	},
 
 	render: function(){
-		$(this.el).html(render('board', this.model.toJSON()))
 		_.each(this.model.get('users').models, this.userAdded);
-
 		return this
 	},
 
