@@ -1,57 +1,54 @@
 var Board = Backbone.Model.extend({
+  initialize: function(){
+    var model = this;
+		_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize'); 
 
-    initialize: function(){
-      var model = this;
-			_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize'); 
+		model.set({cards: new Cards(), users: new Users()});
 
-			model.set({cards: new Cards(), users: new Users()});
+    Networking
+      .bind('remote:initial-state', model.remoteInitialize)
+      .bind('remote:new-user', model.addUser)
+      .bind('remote:clear-board', function() { model.clear(true); })
+      .bind('remote:card-created', function(card){ model.addCard(card, true) })
 
-      Networking.bind('remote:initial-state', model.remoteInitialize);
-      Networking.bind('remote:new-user', model.addUser);
-      Networking.bind('remote:clear-board', function() { model.clear(true); });
-      Networking.bind('remote:card-created', function(card){ model.addCard(card, true) });
-
-      model.get('cards')
-        .bind('reset', function(collection, options){
-          if (!options.remote)
-            Networking.trigger('clear-board', model.toJSON());
-        })
-        .bind('add', function(card, collection, options){
-          if (!options.remote)
-            Networking.trigger('card-created', card.toJSON());
-        });
-
-		},
-
-    remoteInitialize: function(state) {
-      var model = this;
-
-      _.each(state.cards, function(card) {
-        model.addCard(card, true);
+    model.get('cards')
+      .bind('reset', function(collection, options){
+        if (!options.remote)
+          Networking.trigger('clear-board', model.toJSON());
+      })
+      .bind('add', function(card, collection, options){
+        if (!options.remote)
+          Networking.trigger('card-created', card.toJSON());
       });
+	},
 
-      _.each(state.users, function(user) {
-        model.addUser(user, true);
-      });
-    },
+  remoteInitialize: function(state) {
+    var model = this;
 
-		addCard: function(card, remote){
-			this.get('cards').add(card, { remote: remote })
-      return card;
-		},
+    _.each(state.cards, function(card) {
+      model.addCard(card, true);
+    });
 
-		clear: function(remote) {
-			this.get('cards').reset([], { remote: remote })
-		},
+    _.each(state.users, function(user) {
+      model.addUser(user, true);
+    });
+  },
 
-    addUser: function(user, remote){
-      var users = this.get('users');
-      users.add(user, { remote: remote });
-      return user;
-    }
-  });
+	addCard: function(card, remote){
+		this.get('cards').add(card, { remote: remote })
+    return card;
+	},
 
+	clear: function(remote) {
+		this.get('cards').reset([], { remote: remote })
+	},
 
+  addUser: function(user, remote){
+    var users = this.get('users');
+    users.add(user, { remote: remote });
+    return user;
+  }
+});
 
 var BoardView = Backbone.View.extend({
 	tagName: 'div',
@@ -112,4 +109,4 @@ var BoardView = Backbone.View.extend({
     if (position % gridSize < gridSize / 2) return position - (position % gridSize);
     return position + (gridSize - position % gridSize);
   }
-})
+});

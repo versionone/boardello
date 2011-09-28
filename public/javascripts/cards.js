@@ -1,82 +1,83 @@
 var Card = Backbone.Model.extend({
-    defaults: {
-      'title': 'New Card',
-      'left': 0,
-      'top': 0,
-      'grabbed': false
-    },
+  defaults: {
+    'title': 'New Card',
+    'left': 0,
+    'top': 0,
+    'grabbed': false
+  },
 
-		initialize: function(){
-      var model = this
-      _.bindAll(model, 'move', 'letGo', 'delete')
-			if (!model.id) model.set({id: 1 + Math.random() * 100000000000000000})
+	initialize: function(){
+    var model = this
+    _.bindAll(model, 'grab', 'move', 'letGo', 'delete')
+		if (!model.id) model.set({id: 1 + Math.random() * 100000000000000000})
 
-      Networking.bind('remote:card-moving', function(data) {
+    Networking
+      .bind('remote:card-moving', function(data) {
         if (data.id == model.id) {
           model.move(data.left, data.top, true)
         }
-      });
-      Networking.bind('remote:card-grabbed', function(data) {
+      })
+      .bind('remote:card-grabbed', function(data) {
         if (data.id == model.id) {
           model.grab(true);
         }
-      });
-      Networking.bind('remote:card-letgo', function(data) {
+      })
+      .bind('remote:card-letgo', function(data) {
         if (data.id == model.id) {
           model.letGo(true);
         }
-      });
-      Networking.bind('remote:card-destroyed', function(data){
+      })
+      .bind('remote:card-destroyed', function(data){
         if (data.id == model.id) {
           model.delete(true)
         }
       });
 
-      model
-        .bind('change:left', function(_card, value, options) {
-          if (!options.remote)
-            Networking.trigger('card-moving', model.toJSON());
-        })
-        .bind('change:top', function(_card, value, options) {
-          if (!options.remote)
-            Networking.trigger('card-moving', model.toJSON());
-        })
-        .bind('destroy', function(_card, collection, options) {
-          if (!options.remote)
-            Networking.trigger('card-destroyed', model.toJSON());
-        })
-        .bind('change:grabbed', function(_card, value, options) {
-          if (!options.remote) {
-            var eventName = model.get('grabbed') ? 'card-grabbed' : 'card-letgo';
-            Networking.trigger(eventName, model.toJSON());
-          }
-        });
-		},
+    model
+      .bind('change:left', function(_card, value, options) {
+        if (!options.remote)
+          Networking.trigger('card-moving', model.toJSON());
+      })
+      .bind('change:top', function(_card, value, options) {
+        if (!options.remote)
+          Networking.trigger('card-moving', model.toJSON());
+      })
+      .bind('destroy', function(_card, collection, options) {
+        if (!options.remote)
+          Networking.trigger('card-destroyed', model.toJSON());
+      })
+      .bind('change:grabbed', function(_card, value, options) {
+        if (!options.remote) {
+          var eventName = model.get('grabbed') ? 'card-grabbed' : 'card-letgo';
+          Networking.trigger(eventName, model.toJSON());
+        }
+      });
+	},
 
-    grab: function(remote) {
-      var grabbed = this.get('grabbed');
-      if (!grabbed) this.set({grabbed: true}, { remote: remote });
+  grab: function(remote) {
+    var grabbed = this.get('grabbed');
+    if (!grabbed) this.set({grabbed: true}, { remote: remote });
 
-      return !grabbed;
-    },
+    return !grabbed;
+  },
 
-    move: function(left, top, remote){
-      this.set({left: left, top: top}, { remote: remote }); 
-      if (remote) this.set({ remoteMoving: true });
-    },
+  move: function(left, top, remote){
+    this.set({left: left, top: top}, { remote: remote }); 
+    if (remote) this.set({ remoteMoving: true });
+  },
 
-    letGo: function(remote) {
-      this.set({grabbed: false}, { remote : remote });
-    },
+  letGo: function(remote) {
+    this.set({grabbed: false}, { remote : remote });
+  },
 
-    delete: function(remote) {
-      this.trigger('destroy', this, this.collection, { remote: remote });
-    }
-	})
+  delete: function(remote) {
+    this.trigger('destroy', this, this.collection, { remote: remote });
+  }
+});
 
 var Cards = Backbone.Collection.extend({
-    model: Card,
-  });
+  model: Card,
+});
 
 var CardView = Backbone.View.extend({
 	tagName: 'div',

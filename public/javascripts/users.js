@@ -7,18 +7,23 @@ var User = Backbone.Model.extend({
 
   initialize: function(){
     var model = this;
+    _.bindAll(model, 'moveCursor')
     if (!model.id) model.set({id: 1 + Math.random() * 100000000000000000})
 
-    Networking.bind('remote:cursor-movement', function(data) { 
-      if (data.id == model.id) model.moveCursor(data.left, data.top, true)
-    });
+    Networking
+      .bind('remote:cursor-movement', function(data) { 
+        if (data.id == model.id) model.moveCursor(data.left, data.top, true)
+      });
 
-    _.each(['change:top', 'change:left'], function(topic){
-      model.bind(topic, function(_model, value, options){
+    model
+      .bind('change:top', function(_model, value, options){
+        if (!options.remote)
+          Networking.trigger('cursor-movement', model.toJSON());
+      })
+      .bind('change:left', function(_model, value, options){
         if (!options.remote)
           Networking.trigger('cursor-movement', model.toJSON());
       });
-    });
   },
 
   moveCursor: function(left, top, remote) {
@@ -31,7 +36,6 @@ var Users = Backbone.Collection.extend({
 });
 
 var UserView = Backbone.View.extend({
-
 	tagName: 'div',
 	className: 'user',
 
