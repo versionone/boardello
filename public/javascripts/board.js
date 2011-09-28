@@ -1,16 +1,43 @@
 var Board = Backbone.Model.extend({
 
     initialize: function(){
-			_.bindAll(this, 'addCard', 'clear', 'newUser'); // every function that uses 'this' as the current object should be in here
+      var model = this;
+			_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize'); // every function that uses 'this' as the current object should be in here
+      
+			model.set({cards: new Cards(), users: new Users()});
 
-			this.set({cards: new Cards(), users: new Users()});
+      Networking.bind('remote:new-user', model.addUser);
+      Networking.bind('remote:initial-state', model.remoteInitialize);
+      Networking.bind('remote:clear-board', model.clear);
+      Networking.bind('remote:card-created', function(card){
+       model.addCard(card, true) 
+      });
 
-      Networking.bind('remote:new-user', this.newUser);
-      Networking.bind('remote:card-created', this.addCard);
+      model.get('cards')
+        .bind('reset', function(){
+          Networking.trigger('clear-board', model.toJSON());
+        })
+        .bind('add', function(card, collection, options){
+          if (!options.remote)
+            Networking.trigger('card-created', card.toJSON());
+        });
+
 		},
 
-		addCard: function(card){
-			this.get('cards').add(card)
+    remoteInitialize: function(state) {
+      var model = this;
+
+      _.each(state.cards, function(card) {
+        model.addCard(card, true);
+      });
+      
+      _.each(state.users, function(user) {
+        model.addUser(user, true);
+      });
+    },
+
+		addCard: function(card, remote){
+			this.get('cards').add(card, { remote: remote })
       return card;
 		},
 
@@ -18,11 +45,10 @@ var Board = Backbone.Model.extend({
 			this.get('cards').reset()
 		},
 
-    newUser: function(userName) {
-    	var user = new User()
-    	user.set({name: userName})
-			this.get('users').add(user)
-			return user;
+    addUser: function(user, remote){
+      var users = this.get('users');
+      users.add(user, { remote: remote });
+      return user;
     }
   });
 
@@ -33,91 +59,48 @@ var BoardView = Backbone.View.extend({
 	className: 'board',
 
 	events: {
-		'click .change-title': 'changeTitle',
 		'dblclick': 'addCard',
 		'click .clear': 'clear'
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'unrender', 'changeTitle', 'titleChanged', 'addCard', 'cardAdded', 'renderInitialState', 'clear', 'userAdded')
+		_.bindAll(this, 'render', 'addCard', 'cardAdded', 'userAdded', 'clear')
 
 		var model = this.model
 
-		this.model.bind('change:title', this.titleChanged)
 		this.model.get('cards').bind('add', this.cardAdded)
 		this.model.get('cards').bind('reset', this.render)
-
 		this.model.get('users').bind('add', this.userAdded)
-
-    Networking.bind('remote:initial-state', this.renderInitialState);
-    Networking.bind('remote:cursor-movement', function(data) {
-   		$user = $(".user[data-username=" + data.username + "]");
-    	$user.show();
-    	$user.css({top: data.y, left: data.x});
-		});
-
-    Networking.bind('remote:clear-board', function(data) { model.clear(); });
-
-
-		this.render()
 	},
-
-  renderInitialState: function(cards) {
-    var model = this.model;
-    _.each(cards, function(card) {
-      model.addCard(card);
-    });
-  },
 
 	render: function(){
 		$(this.el).html(render('board', this.model.toJSON()))
 		_.each(this.model.get('users').models, this.userAdded);
 
-		$('body').append(this.el);
-
-		var model = this.model;
-
-    $(document).mousemove(function(e) {
-      Networking.trigger('cursor-movement', { username: model.get('me'), x: e.pageX, y: e.pageY });
-    });
-
 		return this
-	},
-
-	unrender: function() {},
-
-	changeTitle: function(){
-		var newTitle = prompt('New Title')
-		this.model.set({title : newTitle})
-	},
-
-	titleChanged: function(){
-		$(this.el).find('.title').html(this.model.get('title'))
 	},
 
 	addCard: function(e){
 		var card = new Card();
-    card.set({title: 'newcard', x: e.clientX, y: e.clientY});
+    card.set({title: 'newcard', left: e.clientX, top: e.clientY});
     this.model.addCard(card);
-    Networking.trigger('card-created', card);
 	},
 
 	cardAdded: function(card){
 		var cardView = new CardView({ model: card });
 		$(this.el).append(cardView.el)
-		cardView.render()
+    cardView.render();
 	},
 
 	userAdded: function(user){
 		var userView = new UserView({ model: user });
 		$(this.el).append(userView.el);
-		userView.render();
+    userView.render();
 	},
 
   clear: function(){
 		if (confirm('are you sure?')) {
 			this.model.clear();
-    	Networking.trigger('clear-board', this.model.toJSON());
   	}
   }
 })
