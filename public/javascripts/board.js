@@ -3,14 +3,14 @@ var Board = Backbone.Model.extend({
     initialize: function(){
       var model = this;
 			_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize'); // every function that uses 'this' as the current object should be in here
-      
+
 			model.set({cards: new Cards(), users: new Users()});
 
       Networking.bind('remote:new-user', model.addUser);
       Networking.bind('remote:initial-state', model.remoteInitialize);
       Networking.bind('remote:clear-board', model.clear);
       Networking.bind('remote:card-created', function(card){
-       model.addCard(card, true) 
+       model.addCard(card, true)
       });
 
       model.get('cards')
@@ -30,7 +30,7 @@ var Board = Backbone.Model.extend({
       _.each(state.cards, function(card) {
         model.addCard(card, true);
       });
-      
+
       _.each(state.users, function(user) {
         model.addUser(user, true);
       });
@@ -82,9 +82,9 @@ var BoardView = Backbone.View.extend({
 
 	addCard: function(e){
 		var card = new Card();
-    var x = this.findNearestGridCoordinate(e.clientX, 10);
-    var y = this.findNearestGridCoordinate(e.clientY, 10);
-    card.set({title: 'newcard', x: x, y: y});
+    var left = this.findNearestGridCoordinate(e.clientX, 10);
+    var top = this.findNearestGridCoordinate(e.clientY, 10);
+    card.set({title: 'newcard', left: left, top: top});
     this.model.addCard(card);
 	},
 
