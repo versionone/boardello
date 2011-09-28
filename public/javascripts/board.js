@@ -2,20 +2,19 @@ var Board = Backbone.Model.extend({
 
     initialize: function(){
       var model = this;
-			_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize'); // every function that uses 'this' as the current object should be in here
+			_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize'); 
 
 			model.set({cards: new Cards(), users: new Users()});
 
-      Networking.bind('remote:new-user', model.addUser);
       Networking.bind('remote:initial-state', model.remoteInitialize);
-      Networking.bind('remote:clear-board', model.clear);
-      Networking.bind('remote:card-created', function(card){
-       model.addCard(card, true)
-      });
+      Networking.bind('remote:new-user', model.addUser);
+      Networking.bind('remote:clear-board', function() { model.clear(true); });
+      Networking.bind('remote:card-created', function(card){ model.addCard(card, true) });
 
       model.get('cards')
-        .bind('reset', function(){
-          Networking.trigger('clear-board', model.toJSON());
+        .bind('reset', function(collection, options){
+          if (!options.remote)
+            Networking.trigger('clear-board', model.toJSON());
         })
         .bind('add', function(card, collection, options){
           if (!options.remote)
@@ -41,8 +40,8 @@ var Board = Backbone.Model.extend({
       return card;
 		},
 
-		clear: function() {
-			this.get('cards').reset()
+		clear: function(remote) {
+			this.get('cards').reset([], { remote: remote })
 		},
 
     addUser: function(user, remote){
@@ -67,10 +66,12 @@ var BoardView = Backbone.View.extend({
 		_.bindAll(this, 'render', 'addCard', 'cardAdded', 'userAdded', 'clear')
 
 		var model = this.model
+      , cards = model.get('cards')
+      , users = model.get('users');
 
-		this.model.get('cards').bind('add', this.cardAdded)
-		this.model.get('cards').bind('reset', this.render)
-		this.model.get('users').bind('add', this.userAdded)
+		cards.bind('add', this.cardAdded)
+		cards.bind('reset', this.render)
+		users.bind('add', this.userAdded)
 	},
 
 	render: function(){
