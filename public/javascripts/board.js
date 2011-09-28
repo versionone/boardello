@@ -55,28 +55,40 @@ var BoardView = Backbone.View.extend({
 	className: 'board',
 
 	events: {
-		'dblclick': 'addCard',
-		'click .clear': 'clear'
+		'dblclick': 'add',
+		'click .clear': 'clear',
+    'click .add-card': 'addCard',
+    'click .add-board': 'addBoard'
 	},
 
 	initialize: function(){
-		_.bindAll(this, 'render', 'addCard', 'cardAdded', 'userAdded', 'clear')
+		_.bindAll(this, 'render', 'add', 'addCard', 'addBoard', 'cardAdded', 'userAdded', 'clear');
 
 		var model = this.model
       , cards = model.get('cards')
       , users = model.get('users');
 
-		cards.bind('add', this.cardAdded)
-		cards.bind('reset', this.render)
-		users.bind('add', this.userAdded)
+		cards
+      .bind('add', this.cardAdded)
+		  .bind('reset', this.render);
+
+		users
+      .bind('add', this.userAdded);
 	},
 
 	render: function(){
-		$(this.el).html(render('board', this.model.toJSON()))
+		$(this.el).html(render('board', this.model.toJSON()));
 		_.each(this.model.get('users').models, this.userAdded);
 
-		return this
+		return this;
 	},
+
+  add: function(e){
+    var $menu = $(render('add-menu', {}));
+    $(this.el).append($menu);
+    $menu.css({left: e.clientX - ($menu.width() / 2), top: e.clientY - ($menu.height() / 2) });
+    $(document).one('click', function(){ $menu.remove(); });
+  },
 
 	addCard: function(e){
 		var card = new Card();
@@ -91,6 +103,9 @@ var BoardView = Backbone.View.extend({
 		$(this.el).append(cardView.el)
     cardView.render();
 	},
+
+  addBoard: function(){
+  },
 
 	userAdded: function(user){
 		var userView = new UserView({ model: user });
