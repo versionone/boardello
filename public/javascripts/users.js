@@ -39,10 +39,11 @@ var UserView = Backbone.View.extend({
         view = this;
     model.bind('change', this.render);
 
-    $(document).mousemove(function(e) {
-      if (view.isMe()) model.set({left: e.pageX, top: e.pageY});
-    });
-
+    if (view.isMe()) {
+      $(document).mousemove(function(e) {
+         model.set({left: e.pageX, top: e.pageY});
+      });
+    }
   },
 
   render: function() {
