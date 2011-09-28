@@ -127,6 +127,8 @@ var CardView = Backbone.View.extend({
         if (e.keyCode != 13) return;
         var $input = $(this).find('input');
         model.set({title: $input.val()});
+      });
+      
     $el
       .html(render('card', model.toJSON()))
       .data('id', model.id)
@@ -153,12 +155,6 @@ var CardView = Backbone.View.extend({
         }
       });
 
-    // $el.find('input').blur(function() {
-    //   var $input = $(this).find('input');
-    //   model.set({title: $input.val()});
-    // });
-
-
 		return this
 	},
 
@@ -172,7 +168,6 @@ var CardView = Backbone.View.extend({
 
   doubleClick: function(event) {
     event.stopPropagation();
-    console.log('eh');
   }
 });
 
