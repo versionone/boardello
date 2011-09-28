@@ -97,8 +97,7 @@ var CardView = Backbone.View.extend({
 	className: 'card',
 
 	events: {
-    'click .delete': 'delete',
-    'dblclick .title' : 'poop'
+    'click .delete': 'delete'
 	},
 
 	initialize: function(){
@@ -155,13 +154,7 @@ var CardView = Backbone.View.extend({
   },
 
   delete: function(){
-    if (confirm('are you sure?'))
-      this.model.delete();
-  },
-
-  poop: function(e) {
-    e.stopPropagation();
-    // $(this.el).find('.title').html($('<input type="text">'));
+    this.model.delete();
   }
 });
 
