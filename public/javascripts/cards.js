@@ -27,6 +27,11 @@ var Card = Backbone.Model.extend({
           model.letGo(true);
         }
       })
+      .bind('remote:card-changetitle', function(data) {
+        if (data.id == model.id) {
+          model.changeTitle(data.title, true);
+        }
+      })
       .bind('remote:card-destroyed', function(data){
         if (data.id == model.id) {
           model.delete(true)
@@ -34,6 +39,10 @@ var Card = Backbone.Model.extend({
       });
 
     model
+      .bind('change:title', function(_card, value, options) {
+        if (!options.remote)
+          Networking.trigger('card-changetitle', model.toJSON());
+      })
       .bind('change:left', function(_card, value, options) {
         if (!options.remote)
           Networking.trigger('card-moving', model.toJSON());
@@ -62,12 +71,16 @@ var Card = Backbone.Model.extend({
   },
 
   move: function(left, top, remote){
-    this.set({left: left, top: top}, { remote: remote }); 
+    this.set({left: left, top: top}, { remote: remote });
     if (remote) this.set({ remoteMoving: true });
   },
 
   letGo: function(remote) {
     this.set({grabbed: false}, { remote : remote });
+  },
+
+  changeTitle: function(newTitle, remote) {
+    this.set({title: newTitle}, { remote: remote });
   },
 
   delete: function(remote) {
@@ -104,6 +117,18 @@ var CardView = Backbone.View.extend({
     var model = this.model
 
     $el.html(render('card', model.toJSON()))
+
+    $el.find('.title')
+      .keypress(function(e) {
+        if (e.keyCode != 13) return;
+        var $input = $(this).find('input');
+        model.set({title: $input.val()});
+      });
+
+    // $el.find('input').blur(function() {
+    //   var $input = $(this).find('input');
+    //   model.set({title: $input.val()});
+    // });
 
     $el.css({
       left: model.get('left'),

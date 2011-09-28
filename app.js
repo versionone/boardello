@@ -72,6 +72,7 @@ io.sockets.on('connection', function (socket) {
     'card-created' : function(card) { cards[card.id] = card; },
     'card-grabbed' : function(card){ cards[card.id] = card; },
     'card-moving' : function(card) { cards[card.id] = card; },
+    'card-changetitle' : function(card) { cards[card.id] = card; },
     'card-letgo' : function(card){ cards[card.id] = card; },
     'card-destroyed' : function(card) { delete cards[card.id]; },
     'cursor-movement' : function(user) { users[user.id] = user; },
@@ -106,10 +107,6 @@ options = {
 var package = stitch.createPackage(options);
 
 app.get('/templates', package.createServer());
-
-
-
-
 
 var port = process.env.PORT || 3000;
 

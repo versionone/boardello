@@ -4,13 +4,14 @@ var Networking = (function() {
   _.extend(module, Backbone.Events);
 
   socket = io.connect(window.location.origin);
-    
+
   var eventNames = [
     'initial-state',
     'card-grabbed',
     'card-letgo',
     'card-moving',
     'card-created',
+    'card-changetitle',
     'card-destroyed',
     'clear-board',
     'cursor-movement',
