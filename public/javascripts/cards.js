@@ -85,11 +85,15 @@ var Card = Backbone.Model.extend({
 
   delete: function(remote) {
     this.trigger('destroy', this, this.collection, { remote: remote });
+  },
+
+  convertToBoard: function(cardId) {
+    this.trigger('convertToBoard', this, this.collection, { cardId: cardId });
   }
 });
 
 var Cards = Backbone.Collection.extend({
-  model: Card,
+  model: Card
 });
 
 var CardView = Backbone.View.extend({
@@ -114,7 +118,7 @@ var CardView = Backbone.View.extend({
 	render: function(){
 
 		var $el = $(this.el)
-    var model = this.model
+      , model = this.model;
 
     $el.html(render('card', model.toJSON()))
 
@@ -123,6 +127,30 @@ var CardView = Backbone.View.extend({
         if (e.keyCode != 13) return;
         var $input = $(this).find('input');
         model.set({title: $input.val()});
+    $el
+      .html(render('card', model.toJSON()))
+      .data('id', model.id)
+      .css({
+        left: model.get('left'),
+        top: model.get('top')
+      })
+      .draggable({
+        start: function(){
+          return model.grab();
+        },
+        drag: function(event, ui){
+          model.move(ui.position.left, ui.position.top);
+        },
+        stop: function() {
+          model.letGo()
+        },
+        grid: [10,10]
+      })
+      .droppable({
+        drop: function(event, ui){
+          var $dropped = ui.draggable;
+          model.convertToBoard($dropped.data().id)
+        }
       });
 
     // $el.find('input').blur(function() {
@@ -130,23 +158,7 @@ var CardView = Backbone.View.extend({
     //   model.set({title: $input.val()});
     // });
 
-    $el.css({
-      left: model.get('left'),
-      top: model.get('top')
-    })
 
-		$(this.el).draggable({
-      start: function(){
-        return model.grab();
-      },
-			drag: function(event, ui){
-        model.move(ui.position.left, ui.position.top);
-			},
-      stop: function() {
-        model.letGo()
-      },
-			grid: [10,10]
-		})
 		return this
 	},
 

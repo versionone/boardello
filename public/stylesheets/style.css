@@ -26,6 +26,11 @@ a {
   text-align: center;
   border-bottom: 1px solid black;
 }
+.board > .board {
+  width: 100px;
+  height: 100px;
+  border: 2px solid black;
+}
 .user {
   display: none;
   z-index: 1000;
