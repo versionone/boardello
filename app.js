@@ -37,29 +37,36 @@ app.get('/', function(req, res){
 });
 
 app.post('/signup', function(req, res){
-  io.sockets.in('app').emit('server:new-user', req.param('username'));
   var username = req.param('username');
-  users.push(username);
-  req.session.username = username;
+  var id = 1 + Math.random() * 100000000000000000;
+  var user = {id: id, name: username};
+  users[id] = user;
+  io.sockets.in('app').emit('server:new-user', user);
+  req.session.user = user;
   res.redirect('/board');
 });
 
 app.get('/board', function(req, res){
-  if (!req.session.username)  {
+  if (!req.session.user)  {
     res.redirect('/');
     return
   }
-  res.render('board', {users: users, me: req.session.username});
+  res.render('board', { user: req.session.user});
 });
 
 var cards = {};
-var users = [];
+var users = {};
 
 io.sockets.on('connection', function (socket) {
 
   socket.join('app'); // our app has one channel!
 
-  socket.emit('server:initial-state', _.values(cards));
+  var state = {
+    cards: _.values(cards),
+    users: _.values(users)
+  }
+
+  socket.emit('server:initial-state', state);
 
   socket.on('client:card-moving', function (data) {
     socket.broadcast.emit('server:card-moving', data);
