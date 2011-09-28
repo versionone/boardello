@@ -102,7 +102,7 @@ var CardView = Backbone.View.extend({
 
 	initialize: function(){
 
-		_.bindAll(this, 'render', 'unrender', 'delete', 'poop')
+		_.bindAll(this, 'render', 'unrender', 'delete');
 
     var model = this.model;
 
