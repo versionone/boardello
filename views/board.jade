@@ -3,18 +3,12 @@ script(type='text/javascript', src='javascripts/cards.js')
 script(type='text/javascript', src='javascripts/board.js')
 
 script(type='text/javascript')
+  $(function(){
+    var board = new Board();
+    board.set({title: 'Boardello of Awesome', me: new User({name: '#{user.name}', id: #{user.id}}) });
 
-  var board = new Board();
-
-  _.each("#{users}".split(','), board.newUser);
-
-  board.set({title: 'Boardello of Awesome', me: "#{me}" });
-
-  var boardView = new BoardView({
-    model: board,
-    id: 'boardview-' + board.id
+    var boardView = new BoardView({ model: board });
+    $('body')
+      .data('user-id', #{user.id})
+      .append(boardView.render().el)
   });
-
-  Networking.start();
-
-input(type='hidden',name='me',id='me',value="#{me}")
