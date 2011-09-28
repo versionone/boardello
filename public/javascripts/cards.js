@@ -60,7 +60,8 @@ var CardView = Backbone.View.extend({
 		$(this.el).draggable({
 			drag: function(event, ui){
         model.move(ui.position.left, ui.position.top);
-			}
+			},
+			grid: [10,10]
 		})
 		return this
 	}

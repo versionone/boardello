@@ -82,7 +82,9 @@ var BoardView = Backbone.View.extend({
 
 	addCard: function(e){
 		var card = new Card();
-    card.set({title: 'newcard', left: e.clientX, top: e.clientY});
+    var x = this.findNearestGridCoordinate(e.clientX, 10);
+    var y = this.findNearestGridCoordinate(e.clientY, 10);
+    card.set({title: 'newcard', x: x, y: y});
     this.model.addCard(card);
 	},
 
@@ -102,5 +104,11 @@ var BoardView = Backbone.View.extend({
 		if (confirm('are you sure?')) {
 			this.model.clear();
   	}
+  },
+
+  findNearestGridCoordinate: function(position, gridSize) {
+    if (position % gridSize === 0) return position;
+    if (position % gridSize < gridSize / 2) return position - (position % gridSize);
+    return position + (gridSize - position % gridSize);
   }
 })
