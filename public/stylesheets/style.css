@@ -40,11 +40,14 @@ a {
   width: 156px;
   z-index: 0;
 }
+.card:hover .delete {
+  opacity: 0.5;
+}
 .card .delete {
   position: absolute;
   z-index: 2;
   background: url('../images/close-card.png');
-  opacity: 0.5;
+  opacity: 0.15;
   cursor: pointer;
   width: 25px;
   height: 22px;

@@ -47,11 +47,16 @@ a {
   height: 96px;
   width: 156px;
   z-index: 0;
+  &:hover {
+    .delete {
+      opacity: 0.5;
+    }
+  }
   .delete {
     position: absolute;
     z-index: 2;
     background: url('../images/close-card.png');
-    opacity: 0.5;
+    opacity: 0.15;
     cursor: pointer;
     width: 25px;
     height: 22px;
