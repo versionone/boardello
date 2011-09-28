@@ -27,7 +27,7 @@ var User = Backbone.Model.extend({
   },
 
   moveCursor: function(left, top, remote) {
-    this.set({left: left, top: top}, { remote: remote });    
+    this.set({left: left, top: top}, { remote: remote });
   }
 });
 
@@ -60,7 +60,7 @@ var UserView = Backbone.View.extend({
     if (this.isMe()) return this;
 
     var $el = $(this.el);
-    $el.html(this.model.get('name'));
+    $el.html("<img src='http://www.gravatar.com/avatar/" + this.model.get('name') + "?s=23'/>");
     $el.attr('data-id', this.model.id);
     $el.css({top: this.model.get('top'), left: this.model.get('left')});
 

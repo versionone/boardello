@@ -10,5 +10,6 @@
     , "backbone": ">= 0.5.3"
     , "stitch": ">= 0.3.2"
     , "underscore": ">= 1.1.7"
+    , "hashlib": ">= 1.0.1"
   }
 }

@@ -5,7 +5,7 @@ script(type='text/javascript', src='javascripts/board.js')
 script(type='text/javascript')
   $(function(){
     window.board = new Board();
-    board.set({title: 'Boardello of Awesome', me: new User({name: '#{user.name}', id: #{user.id}}) });
+    board.set({title: 'Boardello of Awesome', me: new User({name: '#{user}', id: '#{user}'}) });
 
     var boardView = new BoardView({ model: board });
     $('body')

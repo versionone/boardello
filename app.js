@@ -39,7 +39,7 @@ app.get('/', function(req, res){
 app.post('/signup', function(req, res){
   var username = req.param('username');
   var id = 1 + Math.random() * 100000000000000000;
-  var user = {id: id, name: username};
+  var user = {id: id, name: require('hashlib').md5(username)};
   users[id] = user;
   io.sockets.in('app').emit('server:new-user', user);
   req.session.user = user;
@@ -51,7 +51,7 @@ app.get('/board', function(req, res){
     res.redirect('/');
     return
   }
-  res.render('board', { user: req.session.user});
+  res.render('board', { user: req.session.user });
 });
 
 var cards = {};
