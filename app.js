@@ -68,8 +68,9 @@ io.sockets.on('connection', function (socket) {
 
   socket.emit('server:initial-state', state);
 
-  socket.on('client:card-moving', function (data) {
-    socket.broadcast.emit('server:card-moving', data);
+  socket.on('client:card-moving', function (card) {
+    cards[card.id] = card;
+    socket.broadcast.emit('server:card-moving', card);
   });
 
   socket.on('client:card-letgo', function(card) {
@@ -77,8 +78,9 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('server:card-letgo', card);
   });
 
-  socket.on('client:cursor-movement', function (data) {
-    socket.broadcast.emit('server:cursor-movement', data);
+  socket.on('client:cursor-movement', function (user) {
+    users[user.id] = user;
+    socket.broadcast.emit('server:cursor-movement', user);
   });
 
   socket.on('client:card-created', function(data) {
