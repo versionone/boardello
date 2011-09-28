@@ -69,11 +69,12 @@ io.sockets.on('connection', function (socket) {
   socket.emit('server:initial-state', state);
 
   var rebroadcastEvents = {
+    'card-created' : function(card) { cards[card.id] = card; },
+    'card-grabbed' : function(card){ cards[card.id] = card; },
     'card-moving' : function(card) { cards[card.id] = card; },
     'card-letgo' : function(card){ cards[card.id] = card; },
     'card-destroyed' : function(card) { delete cards[card.id]; },
     'cursor-movement' : function(user) { users[user.id] = user; },
-    'card-created' : function(card) { cards[card.id] = card; },
     'clear-board' : function() { cards = {}; }
   };
 

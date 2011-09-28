@@ -2,17 +2,28 @@ var Card = Backbone.Model.extend({
     defaults: {
       'title': 'New Card',
       'left': 0,
-      'top': 0
+      'top': 0,
+      'grabbed': false
     },
 
 		initialize: function(){
       var model = this
-      _.bindAll(model, 'move')
+      _.bindAll(model, 'move', 'letGo', 'delete')
 			if (!model.id) model.set({id: 1 + Math.random() * 100000000000000000})
 
       Networking.bind('remote:card-moving', function(data) {
         if (data.id == model.id) {
           model.move(data.left, data.top, true)
+        }
+      });
+      Networking.bind('remote:card-grabbed', function(data) {
+        if (data.id == model.id) {
+          model.grab(true);
+        }
+      });
+      Networking.bind('remote:card-letgo', function(data) {
+        if (data.id == model.id) {
+          model.letGo(true);
         }
       });
       Networking.bind('remote:card-destroyed', function(data){
@@ -22,7 +33,11 @@ var Card = Backbone.Model.extend({
       });
 
       model
-        .bind('change', function(_card, options) {
+        .bind('change:left', function(_card, value, options) {
+          if (!options.remote)
+            Networking.trigger('card-moving', model.toJSON());
+        })
+        .bind('change:top', function(_card, value, options) {
           if (!options.remote)
             Networking.trigger('card-moving', model.toJSON());
         })
@@ -30,10 +45,28 @@ var Card = Backbone.Model.extend({
           if (!options.remote)
             Networking.trigger('card-destroyed', model.toJSON());
         })
+        .bind('change:grabbed', function(_card, value, options) {
+          if (!options.remote) {
+            var eventName = model.get('grabbed') ? 'card-grabbed' : 'card-letgo';
+            Networking.trigger(eventName, model.toJSON());
+          }
+        });
 		},
 
+    grab: function(remote) {
+      var grabbed = this.get('grabbed');
+      if (!grabbed) this.set({grabbed: true}, { remote: remote });
+
+      return !grabbed;
+    },
+
     move: function(left, top, remote){
-      this.set({left: left, top: top}, { remote: remote })
+      this.set({left: left, top: top}, { remote: remote }); 
+      if (remote) this.set({ remoteMoving: true });
+    },
+
+    letGo: function(remote) {
+      this.set({grabbed: false}, { remote : remote });
     },
 
     delete: function(remote) {
@@ -77,9 +110,15 @@ var CardView = Backbone.View.extend({
     })
 
 		$(this.el).draggable({
+      start: function(){
+        return model.grab();
+      },
 			drag: function(event, ui){
         model.move(ui.position.left, ui.position.top);
 			},
+      stop: function() {
+        model.letGo()
+      },
 			grid: [10,10]
 		})
 		return this
