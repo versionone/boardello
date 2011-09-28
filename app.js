@@ -68,35 +68,22 @@ io.sockets.on('connection', function (socket) {
 
   socket.emit('server:initial-state', state);
 
-  socket.on('client:card-moving', function (card) {
-    cards[card.id] = card;
-    socket.broadcast.emit('server:card-moving', card);
+  var rebroadcastEvents = {
+    'card-moving' : function(card) { cards[card.id] = card; },
+    'card-letgo' : function(card){ cards[card.id] = card; },
+    'card-destroyed' : function(card) { delete cards[card.id]; },
+    'cursor-movement' : function(user) { users[user.id] = user; },
+    'card-created' : function(card) { cards[card.id] = card; },
+    'clear-board' : function() { cards = {}; }
+  };
+
+  _.each(rebroadcastEvents, function(fn, eventName){
+    socket.on('client:' + eventName, function(data) {
+      fn(data);
+      socket.broadcast.emit('server:' + eventName, data);
+    });
   });
 
-  socket.on('client:card-letgo', function(card) {
-    cards[card.id] = card;
-    socket.broadcast.emit('server:card-letgo', card);
-  });
-
-  socket.on('client:card-destroyed', function(card) {
-    delete cards[card.id];
-    socket.broadcast.emit('server:card-destroyed', card);
-  });
-
-  socket.on('client:cursor-movement', function (user) {
-    users[user.id] = user;
-    socket.broadcast.emit('server:cursor-movement', user);
-  });
-
-  socket.on('client:card-created', function(data) {
-    cards[data.id] = data;
-    socket.broadcast.emit('server:card-created', data);
-  });
-
-  socket.on('client:clear-board', function(data) {
-    cards = {};
-    socket.broadcast.emit('server:clear-board', data);
-  });
 });
 
 
