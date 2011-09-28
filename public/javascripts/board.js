@@ -16,6 +16,9 @@ var Board = Backbone.Model.extend({
       .bind('remote:new-user', model.addUser)
       .bind('remote:clear-board', function() { model.clear(true); })
       .bind('remote:card-created', function(card){ model.addCard(card, true) })
+      .bind('remote:card-converted', function(message){ 
+        model.convertCardToBoard(message.convertId, message.moveId)
+      });
 
     model.get('cards')
       .bind('reset', function(collection, options){
@@ -27,20 +30,9 @@ var Board = Backbone.Model.extend({
           Networking.trigger('card-created', card.toJSON());
       })
       .bind('convertToBoard', function(card, collection, options) {
-        var board = new Board({
-          left: card.get('left'),
-          top: card.get('top'),
-          title: card.get('title')
-        });
-
-        model.get('boards').add(board);
-
-        var movingCard = collection.get(options.cardId);
-        var movingCardCopy = movingCard.clone();
-        board.addCard(movingCardCopy);
-        movingCard.delete();
-
-        card.delete();
+        var message = { convertId: card.id, moveId: options.cardId };
+        model.convertCardToBoard(message.convertId, message.moveId);
+        Networking.trigger('card-converted', message);
       });
 	},
 
@@ -69,6 +61,41 @@ var Board = Backbone.Model.extend({
     var users = this.get('users');
     users.add(user, { remote: remote });
     return user;
+  },
+
+  convertCardToBoard: function(convertId, moveId) {
+    var model = this
+      , cards = model.get('cards')
+      , convert = cards.get(convertId)
+      , move = cards.get(moveId);
+
+    //convert to board
+    var board = new Board({
+      left: convert.get('left'),
+      top: convert.get('top'),
+      title: convert.get('title')
+    });
+
+    model.addBoard(board, true);
+    convert.delete(true);
+
+    //move dragged card to board
+    var moved = new Card({
+      left: move.get('left'),
+      top: move.get('top'),
+      title: move.get('title')
+    });
+
+    board.addCard(moved, true);
+    move.delete(true);
+  },
+
+  addBoard: function(board, remote) {
+    var model = this
+      , boards = model.get('boards');
+
+      boards.add(board, { remote: remote });
+      return board;
   }
 });
 

@@ -54,8 +54,9 @@ app.get('/board', function(req, res){
   res.render('board', { user: req.session.user });
 });
 
-var cards = {};
-var users = {};
+var cards = {}
+  , users = {}
+  , boards = {};
 
 io.sockets.on('connection', function (socket) {
 
@@ -63,7 +64,8 @@ io.sockets.on('connection', function (socket) {
 
   var state = {
     cards: _.values(cards),
-    users: _.values(users)
+    users: _.values(users),
+    boards: _.values(boards)
   }
 
   socket.emit('server:initial-state', state);
@@ -76,7 +78,8 @@ io.sockets.on('connection', function (socket) {
     'card-letgo' : function(card){ cards[card.id] = card; },
     'card-destroyed' : function(card) { delete cards[card.id]; },
     'cursor-movement' : function(user) { users[user.id] = user; },
-    'clear-board' : function() { cards = {}; }
+    'clear-board' : function() { cards = {}; },
+    'card-converted' : function() {  }
   };
 
   _.each(rebroadcastEvents, function(fn, eventName){

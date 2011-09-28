@@ -12,6 +12,7 @@ var Networking = (function() {
     'card-moving',
     'card-created',
     'card-changetitle',
+    'card-converted',
     'card-destroyed',
     'clear-board',
     'cursor-movement',
