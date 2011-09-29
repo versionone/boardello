@@ -122,13 +122,7 @@ var CardView = Backbone.View.extend({
 
     $el.html(render('card', model.toJSON()))
 
-    $el.find('.title')
-      .keypress(function(e) {
-        if (e.keyCode != 13) return;
-        var $input = $(this).find('input');
-        model.set({title: $input.val()});
-      });
-      
+
     $el
       .html(render('card', model.toJSON()))
       .data('id', model.id)
@@ -153,6 +147,12 @@ var CardView = Backbone.View.extend({
           var $dropped = ui.draggable;
           model.convertToBoard($dropped.data().id)
         }
+      });
+
+    $el.find('.title')
+      .keypress(function(e) {
+        if (e.keyCode != 13) return;
+        model.set({title: $(this).find('input').val()});
       });
 
 		return this
