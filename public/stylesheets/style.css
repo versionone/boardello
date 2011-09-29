@@ -31,6 +31,10 @@ a {
   height: 92px;
   background: url(../images/notebook.png);
 }
+.board > .board .title {
+  font-family: 'Marker Felt', 'Comic Sans';
+  font-size: 18px;
+}
 .user {
   display: none;
   z-index: 1000;

@@ -1,3 +1,8 @@
+.font-faces() {
+  font-family: 'Marker Felt', 'Comic Sans';
+  font-size: 18px;
+}
+
 body {
   font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
@@ -36,8 +41,10 @@ a {
   > .board {
     width: 121px;
     height: 92px;
+    .title {
+      .font-faces();
+    }
     background: url(../images/notebook.png);
-
   }
 }
 
@@ -54,6 +61,7 @@ a {
     left: 9px;
   }
 }
+
 
 .card {
   background: url('../images/card.png');
@@ -80,8 +88,7 @@ a {
     padding-top: 32px;
     vertical-align: center;
     input {
-      font-family: 'Marker Felt', 'Comic Sans';
-      font-size: 18px;
+      .font-faces();
       width: 100%;
       text-align: center;
       background: transparent;
