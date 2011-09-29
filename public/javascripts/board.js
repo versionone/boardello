@@ -279,6 +279,11 @@ var BoardView = Backbone.View.extend({
 	},
 
 	addCard: function(e){
+    if (this.isNested()) {
+      $(this.el).effect('puff', { percent: 500 }, 500)
+      e.stopPropagation()
+      return
+    }
 		var card = new Card();
     var left = this.findNearestGridCoordinate(e.clientX, 10);
     var top = this.findNearestGridCoordinate(e.clientY, 10);
@@ -287,7 +292,9 @@ var BoardView = Backbone.View.extend({
 	},
 
 	cardAdded: function(card){
-    if (this.isNested()) return;
+    if (this.isNested()) {
+      return;
+    }
 		var cardView = new CardView({ model: card });
 		$(this.el).append(cardView.el)
     cardView.render();
