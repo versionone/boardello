@@ -86,7 +86,11 @@ io.sockets.on('connection', function (socket) {
     },
     'board-grabbed' : function(board) { boards[board.id] = board; },
     'board-moving' : function(board) { boards[board.id] = board; },
-    'board-letgo' : function(board) { boards[board.id] = board; }
+    'board-letgo' : function(board) { boards[board.id] = board; },
+    'card-transfered' : function(data) {
+      delete cards[data.cardId]
+      boards[data.boardId].cards.push(data.card)
+    }
   };
 
   _.each(rebroadcastEvents, function(fn, eventName){

@@ -35,6 +35,10 @@ var Board = Backbone.Model.extend({
         if (data.id == model.id) {
           model.letGo(true);
         }
+      })
+      .bind('remote:card-transfered', function(data){
+        model.get('cards').get(data.cardId).delete(true);
+        model.get('boards').get(data.boardId).addCard(data.card);
       });
 
     model.get('cards')
@@ -48,13 +52,13 @@ var Board = Backbone.Model.extend({
       })
       .bind('convertToBoard', function(card, collection, options) {
         var message = { convertId: card.id, moveId: options.cardId };
-        message.board = model.convertCardToBoard(message.convertId, message.moveId);
+        message.board = model.convertCardToBoard(message.convertId, message.moveId).toJSON();
         Networking.trigger('card-converted', message);
       });
 
     model.get('boards')
       .bind('card-transfered', function(board, collection, options) {
-        debugger
+        //TODO move to a model method....
         var cards = model.get('cards')
           , transfer = cards.get(options.cardId)
 
@@ -64,11 +68,25 @@ var Board = Backbone.Model.extend({
           title: transfer.get('title')
         });
 
-        board.get('cards').add(transfered);
-        transfer.delete();
+        board.addCard(transfered, true);
+        transfer.delete(true);
+        
+        var message = { boardId: board.id, cardId: transfer.id, card: transfered.toJSON() };
+        Networking.trigger('card-transfered', message);
+
       })
       .bind('board-transfered', function(board, collection, options) {
-        debugger
+        // var boards = model.get('boards')
+        //   , transfer = boards.get(options.boardId)
+
+        // var transfered = new Board({
+        //   left: transfer.get('left'),
+        //   top: transfer.get('top'),
+        //   title: transfer.get('title')
+        // });
+
+        // board.get('boards').add(transfered);
+        // transfer.delete();
       })
 
     model
