@@ -19,7 +19,7 @@ var Board = Backbone.Model.extend({
       .bind('remote:clear-board', function() { model.clear(true); })
       .bind('remote:card-created', function(card){ model.addCard(card, true) })
       .bind('remote:card-converted', function(message){ 
-        model.convertCardToBoard(message.convertId, message.moveId, message.boardId)
+        model.convertCardToBoard(message.convertId, message.moveId, message.board)
       })
       .bind('remote:board-moving', function(data) {
         if (data.id == model.id) {
@@ -48,8 +48,7 @@ var Board = Backbone.Model.extend({
       })
       .bind('convertToBoard', function(card, collection, options) {
         var message = { convertId: card.id, moveId: options.cardId };
-        var boardId = model.convertCardToBoard(message.convertId, message.moveId);
-        message.boardId = boardId;
+        message.board = model.convertCardToBoard(message.convertId, message.moveId);
         Networking.trigger('card-converted', message);
       });
 
@@ -80,6 +79,10 @@ var Board = Backbone.Model.extend({
     _.each(state.users, function(user) {
       model.addUser(user, true);
     });
+
+    _.each(state.boards, function(board) {
+      model.addBoard(board, true);
+    });
   },
 
 	addCard: function(card, remote){
@@ -97,21 +100,22 @@ var Board = Backbone.Model.extend({
     return user;
   },
 
-  convertCardToBoard: function(convertId, moveId, boardId) {
+  convertCardToBoard: function(convertId, moveId, board) {
     var model = this
       , cards = model.get('cards')
       , convert = cards.get(convertId)
       , move = cards.get(moveId);
 
     //convert to board
-    var board = new Board({
+    var boardId = board ? board.id : null;
+    var converted = new Board({
       id: boardId,
       left: convert.get('left'),
       top: convert.get('top'),
       title: convert.get('title')
     });
 
-    model.addBoard(board, true);
+    model.addBoard(converted, true);
     convert.delete(true);
 
     //move dragged card to board
@@ -121,10 +125,10 @@ var Board = Backbone.Model.extend({
       title: move.get('title')
     });
 
-    board.addCard(moved, true);
+    converted.addCard(moved, true);
     move.delete(true);
 
-    return board.id;
+    return converted;
   },
 
   addBoard: function(board, remote) {

@@ -72,21 +72,26 @@ io.sockets.on('connection', function (socket) {
 
   var rebroadcastEvents = {
     'card-created' : function(card) { cards[card.id] = card; },
-    'card-grabbed' : function(card){ cards[card.id] = card; },
+    'card-grabbed' : function(card) { cards[card.id] = card; },
     'card-moving' : function(card) { cards[card.id] = card; },
     'card-changetitle' : function(card) { cards[card.id] = card; },
-    'card-letgo' : function(card){ cards[card.id] = card; },
+    'card-letgo' : function(card) { cards[card.id] = card; },
     'card-destroyed' : function(card) { delete cards[card.id]; },
     'cursor-movement' : function(user) { users[user.id] = user; },
     'clear-board' : function() { cards = {}; },
-    'card-converted' : function() {  },
-    'board-grabbed' : function(){  },
-    'board-moving' : function() { },
-    'board-letgo' : function(){  }
+    'card-converted' : function(data) {
+      delete cards[data.convertId];
+      delete cards[data.moveId];
+      boards[data.board.id] = data.board;
+    },
+    'board-grabbed' : function(board) { boards[board.id] = board; },
+    'board-moving' : function(board) { boards[board.id] = board; },
+    'board-letgo' : function(board) { boards[board.id] = board; }
   };
 
   _.each(rebroadcastEvents, function(fn, eventName){
     socket.on('client:' + eventName, function(data) {
+      if (eventName.match(/mov/g) === null) console.log(eventName, data)
       fn(data);
       socket.broadcast.emit('server:' + eventName, data);
     });
