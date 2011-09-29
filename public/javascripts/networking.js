@@ -16,7 +16,10 @@ var Networking = (function() {
     'card-destroyed',
     'clear-board',
     'cursor-movement',
-    'new-user'
+    'new-user',
+    'board-grabbed',
+    'board-letgo',
+    'board-moving'
     ]
 
   _.each(eventNames, function(eventName){

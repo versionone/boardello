@@ -1,12 +1,14 @@
 var Board = Backbone.Model.extend({
   defaults: {
     top: 0,
-    left: 0
+    left: 0,
+    title: 'New Board',
+    grabbed: false
   },
 
   initialize: function(){
     var model = this;
-		_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize');
+		_.bindAll(this, 'addCard', 'clear', 'addUser', 'remoteInitialize', 'grab', 'move', 'letGo');
     if (!model.id) model.set({id: 1 + Math.random() * 100000000000000000})
 
 		model.set({ cards: new Cards(), users: new Users(), boards: new Boards() });
@@ -18,6 +20,21 @@ var Board = Backbone.Model.extend({
       .bind('remote:card-created', function(card){ model.addCard(card, true) })
       .bind('remote:card-converted', function(message){ 
         model.convertCardToBoard(message.convertId, message.moveId)
+      })
+      .bind('remote:board-moving', function(data) {
+        if (data.id == model.id) {
+          model.move(data.left, data.top, true)
+        }
+      })
+      .bind('remote:board-grabbed', function(data) {
+        if (data.id == model.id) {
+          model.grab(true);
+        }
+      })
+      .bind('remote:board-letgo', function(data) {
+        if (data.id == model.id) {
+          model.letGo(true);
+        }
       });
 
     model.get('cards')
@@ -33,6 +50,20 @@ var Board = Backbone.Model.extend({
         var message = { convertId: card.id, moveId: options.cardId };
         model.convertCardToBoard(message.convertId, message.moveId);
         Networking.trigger('card-converted', message);
+      })
+      .bind('change:left', function(_board, value, options) {
+        if (!options.remote)
+          Networking.trigger('board-moving', model.toJSON());
+      })
+      .bind('change:top', function(_board, value, options) {
+        if (!options.remote)
+          Networking.trigger('board-moving', model.toJSON());
+      })
+      .bind('change:grabbed', function(_board, value, options) {
+        if (!options.remote) {
+          var eventName = model.get('grabbed') ? 'board-grabbed' : 'board-letgo';
+          Networking.trigger(eventName, model.toJSON());
+        }
       });
 	},
 
@@ -64,6 +95,7 @@ var Board = Backbone.Model.extend({
   },
 
   convertCardToBoard: function(convertId, moveId) {
+    //the ids for the new card and the new board must be returned, and sent to server
     var model = this
       , cards = model.get('cards')
       , convert = cards.get(convertId)
@@ -96,6 +128,22 @@ var Board = Backbone.Model.extend({
 
       boards.add(board, { remote: remote });
       return board;
+  },
+
+  grab: function(remote) {
+    var grabbed = this.get('grabbed');
+    if (!grabbed) this.set({grabbed: true}, { remote: remote });
+
+    return !grabbed;
+  },
+
+  move: function(left, top, remote){
+    this.set({left: left, top: top}, { remote: remote });
+    if (remote) this.set({ remoteMoving: true });
+  },
+
+  letGo: function(remote) {
+    this.set({grabbed: false}, { remote : remote });
   }
 });
 
@@ -146,13 +194,13 @@ var BoardView = Backbone.View.extend({
         })
         .draggable({
           start: function(){
-            //return model.grab();
+            return model.grab();
           },
           drag: function(event, ui){
-            //model.move(ui.position.left, ui.position.top);
+            model.move(ui.position.left, ui.position.top);
           },
           stop: function() {
-            //model.letGo()
+            model.letGo();
           },
           grid: [10,10]
         })

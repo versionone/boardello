@@ -79,7 +79,10 @@ io.sockets.on('connection', function (socket) {
     'card-destroyed' : function(card) { delete cards[card.id]; },
     'cursor-movement' : function(user) { users[user.id] = user; },
     'clear-board' : function() { cards = {}; },
-    'card-converted' : function() {  }
+    'card-converted' : function() {  },
+    'board-grabbed' : function(){  },
+    'board-moving' : function() { },
+    'board-letgo' : function(){  }
   };
 
   _.each(rebroadcastEvents, function(fn, eventName){
