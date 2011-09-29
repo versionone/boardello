@@ -246,6 +246,7 @@ var BoardView = Backbone.View.extend({
 
     if (view.isNested()) {
       $el
+        .html('<div class="title">'+model.get('title')+'</title>')
         .data('id', model.id)
         .css({
           left: model.get('left'),
