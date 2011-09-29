@@ -38,7 +38,7 @@ var Board = Backbone.Model.extend({
       })
       .bind('remote:card-transfered', function(data){
         model.get('cards').get(data.cardId).delete(true);
-        model.get('boards').get(data.boardId).addCard(data.card);
+        model.get('boards').get(data.boardId).addCard(data.card, true);
       });
 
     model.get('cards')

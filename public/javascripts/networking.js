@@ -19,7 +19,8 @@ var Networking = (function() {
     'new-user',
     'board-grabbed',
     'board-letgo',
-    'board-moving'
+    'board-moving',
+    'card-transfered'
     ]
 
   _.each(eventNames, function(eventName){
