@@ -52,6 +52,25 @@ var Board = Backbone.Model.extend({
         Networking.trigger('card-converted', message);
       });
 
+    model.get('boards')
+      .bind('card-transfered', function(board, collection, options) {
+        debugger
+        var cards = model.get('cards')
+          , transfer = cards.get(options.cardId)
+
+        var transfered = new Card({
+          left: transfer.get('left'),
+          top: transfer.get('top'),
+          title: transfer.get('title')
+        });
+
+        board.get('cards').add(transfered);
+        transfer.delete();
+      })
+      .bind('board-transfered', function(board, collection, options) {
+        debugger
+      })
+
     model
       .bind('change:left', function(_board, value, options) {
         if (!options.remote)
@@ -153,6 +172,14 @@ var Board = Backbone.Model.extend({
 
   letGo: function(remote) {
     this.set({grabbed: false}, { remote : remote });
+  },
+
+  transferCard: function(cardId) {
+    this.trigger('card-transfered', this, this.collection, { cardId: cardId });
+  },
+
+  transferBoard: function(boardId) {
+    this.trigger('board-transfered', this, this.collection, { boardId: boardId });
   }
 });
 
@@ -220,8 +247,11 @@ var BoardView = Backbone.View.extend({
         })
         .droppable({
           drop: function(event, ui){
-            //var $dropped = ui.draggable;
-            //model.convertToBoard($dropped.data().id)
+            var $dropped = ui.draggable
+              , itemId = $dropped.data().id;
+
+            if ($dropped.is('.card')) model.transferCard(itemId);
+            if ($dropped.is('.board')) model.transferBoard(itemId);
           }
         });
       }
