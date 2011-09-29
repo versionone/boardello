@@ -19,7 +19,7 @@ var Board = Backbone.Model.extend({
       .bind('remote:clear-board', function() { model.clear(true); })
       .bind('remote:card-created', function(card){ model.addCard(card, true) })
       .bind('remote:card-converted', function(message){ 
-        model.convertCardToBoard(message.convertId, message.moveId)
+        model.convertCardToBoard(message.convertId, message.moveId, message.boardId)
       })
       .bind('remote:board-moving', function(data) {
         if (data.id == model.id) {
@@ -48,9 +48,12 @@ var Board = Backbone.Model.extend({
       })
       .bind('convertToBoard', function(card, collection, options) {
         var message = { convertId: card.id, moveId: options.cardId };
-        model.convertCardToBoard(message.convertId, message.moveId);
+        var boardId = model.convertCardToBoard(message.convertId, message.moveId);
+        message.boardId = boardId;
         Networking.trigger('card-converted', message);
-      })
+      });
+
+    model
       .bind('change:left', function(_board, value, options) {
         if (!options.remote)
           Networking.trigger('board-moving', model.toJSON());
@@ -94,8 +97,7 @@ var Board = Backbone.Model.extend({
     return user;
   },
 
-  convertCardToBoard: function(convertId, moveId) {
-    //the ids for the new card and the new board must be returned, and sent to server
+  convertCardToBoard: function(convertId, moveId, boardId) {
     var model = this
       , cards = model.get('cards')
       , convert = cards.get(convertId)
@@ -103,6 +105,7 @@ var Board = Backbone.Model.extend({
 
     //convert to board
     var board = new Board({
+      id: boardId,
       left: convert.get('left'),
       top: convert.get('top'),
       title: convert.get('title')
@@ -120,6 +123,8 @@ var Board = Backbone.Model.extend({
 
     board.addCard(moved, true);
     move.delete(true);
+
+    return board.id;
   },
 
   addBoard: function(board, remote) {
@@ -163,18 +168,23 @@ var BoardView = Backbone.View.extend({
 	initialize: function(){
 		_.bindAll(this, 'render', 'addCard', 'cardAdded', 'userAdded', 'clear', 'boardAdded', 'isNested')
 
-		var model = this.model
+		var view = this
+      , model = view.model
       , cards = model.get('cards')
       , users = model.get('users')
       , boards = model.get('boards');
 
+    model
+      .bind('change:top', view.render)
+      .bind('change:left', view.render);
+
 		cards
-      .bind('add', this.cardAdded)
-		  .bind('reset', this.render);
+      .bind('add', view.cardAdded)
+		  .bind('reset', view.render);
 
-		users.bind('add', this.userAdded)
+		users.bind('add', view.userAdded)
 
-    boards.bind('add', this.boardAdded)
+    boards.bind('add', view.boardAdded)
 	},
 
 	render: function(){
